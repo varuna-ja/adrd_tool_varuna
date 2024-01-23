@@ -1,0 +1,1141 @@
+from docx import Document
+from docx.shared import Inches
+import pandas as pd
+import os
+cases_csv = pd.read_csv("./clinician_review_cases.csv")
+
+# Match statements ----------------------------------------------
+def race_match(race):
+    if race == 1:
+        return 'White'
+    elif race == 2:
+        return 'Black or African American'
+    elif race == 3:
+        return 'American Indian or Alaska Native'
+    elif race == 4:
+        return "American Indian or Alaska Native"
+    elif race == 5:
+        return "Asian"
+    else:
+        return 'Other'
+def prim_lang_match(lang):
+    if lang == 1:
+        return 'English'
+    elif lang == 2:
+        return 'Spanish'
+    elif lang == 3:
+        return 'Mandarin'
+    elif lang == 4:
+        return 'Cantonese'
+    elif lang == 5:
+        return 'Russian'
+    elif lang == 6:
+        return 'Japanese'
+    elif lang == 8:
+        return 'Other'
+    else:
+        return 'Unknown'
+def marital_match(marriage_status):
+    if marriage_status == 1:
+        return 'Married'
+    elif marriage_status == 2:
+        return 'Widowed'
+    elif marriage_status == 3:
+        return 'Divorced'
+    elif marriage_status == 4:
+        return 'Separated'
+    elif marriage_status == 5:
+        return 'Never married (or marriage was annulled)'
+    elif marriage_status == 6:
+        return 'Living as married/domestic partner'
+    else:
+        return 'Unknown'
+def lives_with_match(lives_with):
+    if lives_with == 1:
+        return 'Lives alone'
+    elif lives_with == 2:
+        return 'Lives with spouse or partner'
+    elif lives_with == 3:
+        return 'Lives with relative or friend'
+    elif lives_with == 4:
+        return 'Lives with group'
+    elif lives_with == 5:
+        return 'Other'
+    else:
+        return 'Unknown'
+def residence_match(residence):
+    if residence == 1:
+        return 'Single- or multi-family private residence (apartment, condo, house)'
+    elif residence == 2:
+        return 'Retirement community or independent group living'
+    elif residence == 3:
+        return 'Assisted living, adult family home, or boarding home'
+    elif residence == 4:
+        return 'Skilled nursing facility, nursing home, hospital or hospice'
+    else:
+        return 'Unknown'
+def independence_match(ind):
+    if ind == 1:
+        return 'Able to live independently'
+    elif ind == 2:
+        return 'Requires some assistance with complex activities'
+    elif ind == 3:
+        return 'Requires some assistance with basic activities'
+    elif ind == 4:
+        return 'Completely dependent'
+    else:
+        return 'Unknown'
+def abs_rec_rem(x):
+    if x == 0:
+        return 'Absent'
+    elif x == 1:
+        return 'Recent/Active'
+    elif x ==2:
+        return 'Remote/Inactive'
+    else:
+        return 'Unknown'
+def mult(x):
+    if x == 0:
+        return 'No'
+    elif x == 1:
+        return 'Yes'
+    elif x ==8:
+        return 'N/A'
+    else:
+        return 'Unknown'
+def hx_tbi(x):
+    if x == 0:
+        return 'No'
+    elif x == 1:
+        return 'Single'
+    elif x ==8:
+        return 'Repeated/Multiple'
+    else:
+        return 'Not available'
+def arth_type(x):
+    if x == 1:
+        return 'Rheumatoid'
+    elif x == 2:
+        return 'Osteoarthritis'
+    elif x == 3:
+        return 'Other: ' + pt['ARTHTYPX']
+    else: 
+        return 'Unknown'
+def y_n_match(x):
+    if x == 0:
+        return 'No'
+    elif x == 1:
+        return 'Yes'
+    else:
+        return 'Unknown'
+def get_cigarette_amount_description(value):
+    if value == 0:
+        return "No reported cigarette use"
+    elif value == 1:
+        return "1 cigarette to less than 1/2 pack"
+    elif value == 2:
+        return "½ pack to less than 1 pack"
+    elif value == 3:
+        return "1 pack to 1½ packs"
+    elif value == 4:
+        return "1½ packs to 2 packs"
+    elif value == 5:
+        return "More than two packs"
+    else:
+        return "Invalid value"
+def get_activity_frequency(value):
+    if value == 0:
+        return "Less than once a month"
+    elif value == 1:
+        return "About once a month"
+    elif value == 2:
+        return "About once a week"
+    elif value == 3:
+        return "A few times a week"
+    elif value == 4:
+        return "Daily or almost daily"
+    else:
+        return "Invalid value"
+def get_GDS_questionare_description(x):
+    if x == 0:
+        return 'No'
+    elif x == 1:
+        return 'Yes'
+    else:
+        return 'Did not answer'
+def severity_match(value):
+    if value == 1:
+        return "Mild (noticeable, but not a significant change)"
+    elif value == 2:
+        return "Moderate (significant, but not a dramatic change)"
+    elif value == 3:
+        return "Severe (very marked or prominent; a dramatic change)"
+    elif value == 8:
+        return "None reported"
+    elif value == 9:
+        return "Unknown"
+    else:
+        return "Invalid value"
+def get_speech_description(value):
+    if value == 0:
+        return "Normal"
+    elif value == 1:
+        return "Slight loss of expression, diction, and/or volume"
+    elif value == 2:
+        return "Monotone, slurred but understandable; moderately impaired"
+    elif value == 3:
+        return "Marked impairment, difficult to understand"
+    elif value == 4:
+        return "Unintelligible"
+    elif value == 8:
+        return "Untestable"
+    else:
+        return "Invalid value"
+def get_facial_expression_description(value):
+    if value == 0:
+        return "Normal"
+    elif value == 1:
+        return "Minimal hypomimia, could be normal “poker face”"
+    elif value == 2:
+        return "Slight but definitely abnormal diminution of facial expression"
+    elif value == 3:
+        return "Moderate hypomimia; lips parted some of the time"
+    elif value == 4:
+        return "Masked or fixed facies with severe or complete loss of facial expression; lips parted one-quarter inch or more"
+    elif value == 8:
+        return "Untestable"
+    else:
+        return "Invalid value"
+def get_gait_description(value):
+    if value == 0:
+        return "Normal"
+    elif value == 1:
+        return "Walks slowly; may shuffle with short steps, but no festination (hastening steps) or propulsion"
+    elif value == 2:
+        return "Walks with difficulty, but requires little or no assistance; may have some festination, short steps, or propulsion"
+    elif value == 3:
+        return "Severe disturbance of gait requiring assistance"
+    elif value == 4:
+        return "Cannot walk at all, even with assistance"
+    elif value == 8:
+        return "Untestable"
+    else:
+        return "Invalid value"
+def get_tremor_face_description(value):
+    if value == 0:
+        return "Absent"
+    elif value == 1:
+        return "Slight and infrequently present"
+    elif value == 2:
+        return "Mild in amplitude and persistent; or moderate in amplitude, but only intermittently present"
+    elif value == 3:
+        return "Moderate in amplitude and present most of the time"
+    elif value == 4:
+        return "Marked in amplitude and present most of the time"
+    elif value == 8:
+        return "Untestable"
+    else:
+        return "Invalid value"
+def get_resting_tremors_description(value):
+    if value == 0:
+        return "Absent"
+    elif value == 1:
+        return "Slight and infrequently present"
+    elif value == 2:
+        return "Mild in amplitude and persistent; or moderate in amplitude, but only intermittently present"
+    elif value == 3:
+        return "Moderate in amplitude and present most of the time"
+    elif value == 4:
+        return "Marked in amplitude and present most of the time"
+    elif value == 8:
+        return "Untestable"
+    else:
+        return "Invalid value"
+def get_action_tremors_description(value):
+    if value == 0:
+        return "Absent"
+    elif value == 1:
+        return "Slight; present with action"
+    elif value == 2:
+        return "Moderate in amplitude, present with action"
+    elif value == 3:
+        return "Moderate in amplitude with posture holding as well as action"
+    elif value == 4:
+        return "Marked in amplitude; interferes with feeding"
+    elif value == 8:
+        return "Untestable"
+    else:
+        return "Invalid value"
+def get_finger_taps_hand_description(value):
+    if value == 0:
+        return "Normal"
+    elif value == 1:
+        return "Mild slowing and/or reduction in amplitude"
+    elif value == 2:
+        return "Moderately impaired; definite and early fatiguing; may have occasional arrests in movement"
+    elif value == 3:
+        return "Severely impaired; frequent hesitation in initiating movements or arrests in ongoing movement"
+    elif value == 4:
+        return "Can barely perform the task"
+    elif value == 8:
+        return "Untestable"
+    else:
+        return "Invalid value"
+def get_alternating_movement_hand_description(value):
+    if value == 0:
+        return "Normal"
+    elif value == 1:
+        return "Mild slowing and/or reduction in amplitude"
+    elif value == 2:
+        return "Moderately impaired; definite and early fatiguing; may have occasional arrests in movement"
+    elif value == 3:
+        return "Severely impaired; frequent hesitation in initiating movements or arrests in ongoing movement"
+    elif value == 4:
+        return "Can barely perform the task"
+    elif value == 8:
+        return "Untestable"
+    else:
+        return "Invalid value"
+def get_leg_agility_leg_description(value):
+    if value == 0:
+        return "Normal"
+    elif value == 1:
+        return "Mild slowing and/or reduction in amplitude"
+    elif value == 2:
+        return "Moderately impaired; definite and early fatiguing; may have occasional arrests in movement"
+    elif value == 3:
+        return "Severely impaired; frequent hesitation in initiating movements or arrests in ongoing movement"
+    elif value == 4:
+        return "Can barely perform the task"
+    elif value == 8:
+        return "Untestable"
+    else:
+        return "Invalid value"
+def no_yes_notAssessed(value):
+    if value == 0:
+        return "No"
+    elif value == 1:
+        return "Yes"
+    elif value == 8:
+        return "Not assessed"
+    else:
+        return "Invalid value"
+def get_bradykinesia_description(value):
+    if value == 0:
+        return "None"
+    elif value == 1:
+        return "Minimal slowness, giving movement a deliberate character; could be normal for some persons; possibly reduced amplitude"
+    elif value == 2:
+        return "Mild degree of slowness and poverty of movement which is definitely abnormal. Alternatively, some reduced amplitude"
+    elif value == 3:
+        return "Moderate slowness, poverty or small amplitude of movement"
+    elif value == 4:
+        return "Marked slowness, poverty or small amplitude of movement"
+    elif value == 8:
+        return "Untestable"
+    else:
+        return "Invalid value"
+def get_postural_stability_description(value):
+    if value == 0:
+        return "Normal erect"
+    elif value == 1:
+        return "Retropulsion, but recovers unaided"
+    elif value == 2:
+        return "Absence of postural response; would fall if not caught by examiner"
+    elif value == 3:
+        return "Very unstable, tends to lose balance spontaneously"
+    elif value == 4:
+        return "Unable to stand without assistance"
+    elif value == 8:
+        return "Untestable"
+    else:
+        return "Invalid value"
+def get_rigidity_description(value):
+    if value == 0:
+        return "Absent"
+    elif value == 1:
+        return "Slight or detectable only when activated by mirror or other movements"
+    elif value == 2:
+        return "Mild to moderate"
+    elif value == 3:
+        return "Marked, but full range of motion easily achieved"
+    elif value == 4:
+        return "Severe; range of motion achieved with difficulty"
+    elif value == 8:
+        return "Untestable"
+    else:
+        return "Invalid value"
+def get_hand_movements_description(value):
+    if value == 0:
+        return "Normal"
+    elif value == 1:
+        return "Mild slowing and/or reduction in amplitude"
+    elif value == 2:
+        return "Moderately impaired; definite and early fatiguing; may have occasional arrests in movement"
+    elif value == 3:
+        return "Severely impaired; frequent hesitation in initiating movements or arrests in ongoing movement"
+    elif value == 4:
+        return "Can barely perform the task"
+    else:
+        return "Invalid value"
+def get_arising_description(value):
+    if value == 0:
+        return "Normal"
+    elif value == 1:
+        return "Slow; or may need more than one attempt"
+    elif value == 2:
+        return "Pushes self up from arms of seat"
+    elif value == 3:
+        return "Tends to fall back and may have to try more than one time, but can get up without help"
+    elif value == 4:
+        return "Unable to arise without help"
+    elif value == 8:
+        return "Untestable"
+    else:
+        return "Invalid value"
+def get_posture_description(value):
+    if value == 0:
+        return "Normal"
+    elif value == 1:
+        return "Not quite erect, slightly stooped posture; could be normal for older person"
+    elif value == 2:
+        return "Moderately stooped posture, definitely abnormal; can be slightly leaning to one side"
+    elif value == 3:
+        return "Severely stooped posture with kyphosis; can be moderately leaning to one side"
+    elif value == 4:
+        return "Marked flexion with extreme abnormality of posture"
+    elif value == 8:
+        return "Untestable"
+    else:
+        return "Invalid value"
+def get_gait_description(value):
+    if value == 0:
+        return "Normal"
+    elif value == 1:
+        return "Walks slowly; may shuffle with short steps, but no festination (hastening steps) or propulsion"
+    elif value == 2:
+        return "Walks with difficulty, but requires little or no assistance; may have some festination, short steps, or propulsion"
+    elif value == 3:
+        return "Severe disturbance of gait requiring assistance"
+    elif value == 4:
+        return "Cannot walk at all, even with assistance"
+    elif value == 8:
+        return "Untestable"
+    else:
+        return "Invalid value"
+def get_FA_description(value):
+    if value == 0:
+        return "Normal"
+    elif value == 1:
+        return "Has difficulty, but does by self"
+    elif value == 2:
+        return "Requires assistance"
+    elif value == 3:
+        return "Dependent"
+    elif value == 8:
+        return "Not applicable (e.g., never did)"
+    else:
+        return "Invalid value"
+def get_mmse_score_description(value):
+    if value == 88:
+        return "Score not calculated; missing at least one MMSE item"
+    elif value == -4:
+        return "Not Available"
+    elif value == 95:
+        return "Physical problem"
+    elif value == 96:
+        return "Cognitive/behavior problem"
+    elif value == 97:
+        return "Other problem"
+    elif value == 98:
+        return "Verbal refusal"
+    else:
+        return str(value)
+def get_mmse_location_description(value):
+    if value == 1:
+        return " in ADC/clinic"
+    elif value == 2:
+        return " in home"
+    elif value == 3:
+        return " in person — other"
+    else:
+        return "Invalid value"
+def get_language_mmse_description(value):
+    if value == 1:
+        return "English"
+    elif value == 2:
+        return "Spanish"
+    elif value == 3:
+        return "Other"
+    else:
+        return "Invalid value"
+def get_trail_making_description(value):
+    if value == 995:
+        return "Physical problem"
+    elif value == 996:
+        return "Cognitive/behavior problem"
+    elif value == 997:
+        return "Other problem"
+    elif value == 998:
+        return "Verbal refusal"
+    elif value == -4:
+        return "Not available"
+    else:
+        return str(value)
+def stats(value, mean, sd, Q1, Q3):
+    z = (value - mean) / sd
+    return 'z-score: ' + str(round(z, 2)) + ', 25th percentile: ' + str(Q1) + ', 75th percentile: ' + str(Q3)
+# Sections ------------------------------------
+def demographics(pt, document):
+    document.add_heading('General information', level=1)
+    #document.add_paragraph('Age (yrs) - ' + str(pt['VISITYR']-pt['BIRTHYR']), style='List Bullet')
+    document.add_paragraph((lambda sex: 'Male' if sex == 1 else 'Female')(pt['SEX']), style='List Bullet')
+    document.add_paragraph('Race: ' + race_match(pt['RACE']), style='List Bullet')
+    document.add_paragraph('Primary Language: ' + prim_lang_match(pt['PRIMLANG']), style='List Bullet')
+    document.add_paragraph('Years of Education: ' + str(pt['EDUC']), style='List Bullet')
+    document.add_paragraph('Marital status: ' + marital_match(pt['MARISTAT']), style='List Bullet')
+    document.add_paragraph('Living situation: ' + lives_with_match(pt['NACCLIVS']), style='List Bullet')
+    document.add_paragraph('Residence type: ' + residence_match(pt['RESIDENC']), style='List Bullet')
+    document.add_paragraph('Level of independence: ' + independence_match(pt['INDEPEND']), style='List Bullet')
+    document.add_paragraph((lambda hand: 'Right-handed' if hand == 1 else 'Left-handed')(pt['HANDED']), style='List Bullet')
+def vitals(pt, document):
+    document.add_heading('Vitals', level=1)
+    document.add_paragraph('Height (in): ' + str(pt['HEIGHT']), style='List Bullet')
+    document.add_paragraph('Weight (lbs): ' + str(pt['WEIGHT']), style='List Bullet')
+    document.add_paragraph('Blood pressure: ' + str(pt['BPSYS']) +'/'+ str(pt['BPDIAS']), style='List Bullet')
+    document.add_paragraph('Resting heart rate (bpm): ' + str(pt['HRATE']), style='List Bullet')
+def past_medical_history(pt,document):
+    document.add_heading('Past Medical History', level=1)
+    document.add_paragraph('Heart attack/cardiac arrest: ' + abs_rec_rem(pt['CVHATT']), style='List Bullet')
+    document.add_paragraph('More than one heart attack/cardiac arrest: ' + mult(pt['HATTMULT']), style='List Bullet')
+    document.add_paragraph('Atrial Fibrillation: ' + abs_rec_rem(pt['CVAFIB']), style='List Bullet')
+    document.add_paragraph('Defibrillator: ' + abs_rec_rem(pt['CVPACDEF']), style='List Bullet')
+    document.add_paragraph('Congestive heart failure: ' + abs_rec_rem(pt['CVCHF']), style='List Bullet')
+    document.add_paragraph('Angina: ' + abs_rec_rem(pt['CVANGINA']), style='List Bullet')
+    document.add_paragraph('Other Cardiovascular Disease: ' + abs_rec_rem(pt['CVOTHR']), style='List Bullet')
+    document.add_paragraph('Stroke: ' + abs_rec_rem(pt['CBSTROKE']), style='List Bullet')
+    document.add_paragraph('More than one stroke reported: ' + mult(pt['STROKMUL']), style='List Bullet')
+    document.add_paragraph('Transient ichemic attack (TIA): ' + abs_rec_rem(pt['CBTIA']), style='List Bullet')
+    document.add_paragraph('More than one TIA reported: ' + mult(pt['TIAMULT']), style='List Bullet')
+    document.add_paragraph('Seizures: ' + abs_rec_rem(pt['SEIZURES']), style='List Bullet')
+    document.add_paragraph('Traumatic brain injury (TBI): ' + abs_rec_rem(pt['TBI']), style='List Bullet')
+    document.add_paragraph('History of TBI with brief loss of conciousness: ' + hx_tbi(pt['TBIBRIEF']), style='List Bullet')
+    document.add_paragraph('History of TBI with extended loss of conciousness: ' + hx_tbi(pt['TBIEXTEN']), style='List Bullet')
+    document.add_paragraph('History of TBI without loss of consciousness — as might result from military detonations or sports injury: ' + hx_tbi(pt['TBIWOLOS']), style='List Bullet')
+    
+    document.add_paragraph('Diabetes: ' + abs_rec_rem(pt['DIABETES']), style='List Bullet')
+    if pt['DIABETES'] == 1 or pt['DIABETES'] == 2:
+        document.add_paragraph((lambda x: 'Type 1' if x == 1 else ('Type 2' if x == 2 else 'Other type (diabetes insipidus, latent autoimmune diabetes/type 1.5, gestational diabetes)'))(pt['DIABTYPE']), style='List Bullet')
+    document.add_paragraph('Hypertension: ' + abs_rec_rem(pt['HYPERTEN']), style='List Bullet')
+    document.add_paragraph('Thyroid disease: ' + abs_rec_rem(pt['THYROID']), style='List Bullet')
+    document.add_paragraph('Vitamin B12 deficiency: ' + abs_rec_rem(pt['B12DEF']), style='List Bullet')
+    document.add_paragraph('Hypercholesterolemia: ' + abs_rec_rem(pt['HYPERCHO']), style='List Bullet')
+    document.add_paragraph('Arthritis: ' + abs_rec_rem(pt['ARTHRIT']), style='List Bullet')
+    if pt['ARTHTYPE'] != 8:
+        document.add_paragraph('Type of arthritis: ' + arth_type(pt['ARTHTYPE']), style='List Bullet')
+        if pt['ARTHUNK'] != 1:
+            document.add_paragraph('Upper extremity is affected by arthritis: ' + abs_rec_rem(pt['ARTHUPEX']), style='List Bullet')
+            document.add_paragraph('Lower extremity is affected by arthritis: ' + abs_rec_rem(pt['ARTHLOEX']), style='List Bullet')
+            document.add_paragraph('Spine is affected by arthritis: ' + abs_rec_rem(pt['ARTHSPIN']), style='List Bullet')
+    document.add_paragraph('Urinary incontinence: ' + abs_rec_rem(pt['INCONTU']), style='List Bullet')
+    document.add_paragraph('Bowel incontinence: ' + abs_rec_rem(pt['INCONTF']), style='List Bullet')
+    document.add_paragraph('Hypsomnia/Insomnia: ' + abs_rec_rem(pt['INSOMN']), style='List Bullet')
+    document.add_paragraph('Sleep apnea history: ' + abs_rec_rem(pt['APNEA']), style='List Bullet')
+    document.add_paragraph('REM sleep behavior disorder: ' + abs_rec_rem(pt['RBD']), style='List Bullet')
+    document.add_paragraph('Other sleep disorder: ' + abs_rec_rem(pt['OTHSLEEP']), style='List Bullet')
+    #if pt['OTHSLEEP'] != 0:
+        #document.add_paragraph(str(pt['OTHSLEEX']), style='List Bullet')
+    document.add_paragraph('Anxiety: ' + abs_rec_rem(pt['ANXIETY']), style='List Bullet')
+    #document.add_paragraph('Anxiety in the last month: ' + y_n_match(pt['ANX']), style='List Bullet')
+    document.add_paragraph('Active depression in the last two years: ' + y_n_match(pt['DEP2YRS']), style='List Bullet')
+    document.add_paragraph('Depression episodes more than two years ago: ' + y_n_match(pt['DEPOTHR']), style='List Bullet')
+    document.add_paragraph('Post-truamatic stress disorder: ' + abs_rec_rem(pt['PTSD']), style='List Bullet')
+    document.add_paragraph('Bipolar disorder: ' + abs_rec_rem(pt['BIPOLAR']), style='List Bullet')
+    document.add_paragraph('Schizophrenia: ' + abs_rec_rem(pt['SCHIZ']), style='List Bullet')
+    document.add_paragraph('Developmental neuropsychiatric disorders (e.g., autism spectrum disorder [ASD], attention-deficit hyperactivity disorder [ADHD], dyslexia): ' + abs_rec_rem(pt['NPSYDEV']), style='List Bullet')
+    document.add_paragraph('Other psychiatric disorder: ' + abs_rec_rem(pt['PSYCDIS']), style='List Bullet')
+    document.add_paragraph('Obsessive compulsive disorder: ' + abs_rec_rem(pt['OCD']), style='List Bullet')
+
+    document.add_paragraph('Without corrective lenses, is the patient\'s vision functionally normal?: ' + y_n_match(pt['VISION']), style='List Bullet')
+    if pt['VISCORR'] == 1:
+        document.add_paragraph('The patient usually wears corrective lenses, is the patient\'s vision functionally normal with corrective lenses?: ' + y_n_match(pt['VISWCORR']), style='List Bullet')
+    document.add_paragraph('Without a hearing aid(s), is the patient\'s hearing functionally normal?: ' + y_n_match(pt['HEARING']), style='List Bullet')
+    if pt['HEARAID'] == 1:
+        document.add_paragraph('The patient usually wears a hearing aid(s), is the patient\'s hearing functionally normal with a hearing aid(s)' + y_n_match(pt['HEARWAID']), style = 'List Bullet')
+def social_history(pt,document):
+    document.add_heading('Social History', level=1)
+
+    document.add_paragraph('Has the patient smoked cigarettes in last 30 days: ' + y_n_match(pt['TOBAC30']), style='List Bullet')
+    document.add_paragraph('Has the patient smoked more than 100 cigarettes in life: ' + y_n_match(pt['TOBAC100']), style='List Bullet')
+    if pt['SMOKYRS'] != 88:
+        document.add_paragraph('Patient smoked for ' + str(pt['SMOKYRS']) + ' years in total', style='List Bullet')
+    if not (pt['PACKSPER'] == 8) or (pt['PACKSPER'] == 9):
+        document.add_paragraph('Has the patient smoked cigarettes in last 30 days: ' + get_cigarette_amount_description(pt['PACKSPER']), style='List Bullet')
+    if not (pt['QUITSMOK'] == 888 or pt['QUITSMOK']== 999):
+        document.add_paragraph('Subject quit smoking at age ' + str(pt['QUITSMOK']), style='List Bullet')
+        document.add_paragraph('In the past three months, has the subject consumed any alcohol?: ' + y_n_match(pt['ALCOCCAS']), style='List Bullet')
+    document.add_paragraph('In the past three months, has the patient consumed alcohol?: ' + y_n_match(pt['ALCOCCAS']), style='List Bullet')
+    if pt['ALCFREQ'] != 8:
+        document.add_paragraph('During the past three months, how often did the subject have at leaset one drink of any alcoholic beverage such as wine, beer, malt liquor, or spirits?: ' + get_activity_frequency(pt['ALCFREQ']), style='List Bullet')
+    document.add_paragraph('Alcohol abuse (clinically significant impairment occurring over a 12-month period manifested in one of the following areas: work, driving, legal, or social)?: ' + abs_rec_rem(pt['ALCOHOL']), style='List Bullet')
+    document.add_paragraph('Other abused substance  (clinically significant impairment occurring over a 12-month period manifested in one of the following areas: work, driving, legal, or social)?: ' + abs_rec_rem(pt['ABUSOTHR']), style='List Bullet')
+def testing(pt, document):
+    document.add_heading('Testing', level=1)
+    document.add_heading('NPI-Q', level=2)
+    NPIQ_variables = ['DEL', 'HALL', 'AGIT', 'DEPD', 'ANX', 'ELAT', 'APA', 'DISN', 'IRR', 'MOT', 'NITE', 'APP']
+    NPIQ_feature_list = ['delusions in the last month', 
+                         'hallucinations in the last month', 
+                         'agitation or aggression in the last month',
+                         'depression or dysphoria in the last month',
+                         'anxiety in the last month',
+                         'elation or euphoria in the last month',
+                         'apathy or indifference in the last month',
+                         'disinhibition in the last month',
+                         'irritability or lability in the last month',
+                         'motor disturbance in the last month',
+                         'nighttime behaviors in the last month',
+                         'appetite and eating problems in the last month']
+    for i in range(len(NPIQ_variables)):
+        p = document.add_paragraph(style='List Bullet')
+        run = p.add_run(NPIQ_feature_list[i])
+        run.underline = True
+        document.add_paragraph(severity_match(pt[NPIQ_variables[i] + 'SEV']))
+    
+    document.add_heading('UPDRS Exam', level = 2)
+    document.add_paragraph('Were there abnormal findings?: ' + y_n_match(pt['NACCNREX']))
+
+    
+
+    if pt['SPEECH'] != -4:
+        document.add_paragraph('Speech: ' + get_speech_description(pt['SPEECH']), style = 'List Bullet')
+
+    if pt['FACEXP'] != -4:
+        document.add_paragraph('Facial expression: ' + get_facial_expression_description(pt['FACEXP']), style = 'List Bullet')
+
+    if pt['GAIT'] != -4:
+        document.add_paragraph('Gait: ' + get_gait_description(pt['GAIT']), style = 'List Bullet')
+
+    if pt['PARKSIGN'] != -4:
+        document.add_paragraph('Any parkinsonian signs: ' + y_n_match(pt['PARKSIGN']), style = 'List Bullet')
+
+    if pt['TRESTFAC'] != -4:
+        document.add_paragraph('Tremor at rest - face, lips, chin: ' + get_tremor_face_description(pt['TRESTFAC']), style = 'List Bullet')
+
+    if pt['TRESTLHD'] != -4:
+        document.add_paragraph('Any resting tremors of left arm: ' + get_resting_tremors_description(pt['TRESTLHD']), style = 'List Bullet')
+
+    if pt['TRESTRHD'] != -4:
+        document.add_paragraph('Any resting tremors of right arm: ' + get_resting_tremors_description(pt['TRESTRHD']), style = 'List Bullet')
+
+    if pt['TRESTLFT'] != -4:
+        document.add_paragraph('Any resting tremors of left foot: ' + get_resting_tremors_description(pt['TRESTLFT']), style = 'List Bullet')
+
+    if pt['TRESTRFT'] != -4:
+        document.add_paragraph('Any resting tremors of right foot: ' + get_resting_tremors_description(pt['TRESTRFT']), style = 'List Bullet')
+
+    if pt['TRACTRHD'] != -4:
+        document.add_paragraph('Action or postural tremor — right hand: ' + get_action_tremors_description(pt['TRACTRHD']), style = 'List Bullet')
+
+    if pt['TRACTLHD'] != -4:
+        document.add_paragraph('Action or postural tremor — left hand: ' + get_action_tremors_description(pt['TRACTLHD']), style = 'List Bullet')
+
+    if pt['RIGDNECK'] != -4:
+        document.add_paragraph('Rigidity — neck: ' + get_rigidity_description(pt['RIGDNECK']), style = 'List Bullet')
+
+    if pt['RIGDUPRT'] != -4:
+        document.add_paragraph('Rigidity — right upper extremity: ' + get_rigidity_description(pt['RIGDUPRT']), style = 'List Bullet')
+
+    if pt['RIGDUPLF'] != -4:
+        document.add_paragraph('Rigidity — left upper extremity: ' + get_rigidity_description(pt['RIGDUPLF']), style = 'List Bullet')
+
+    if pt['RIGDLORT'] != -4:
+        document.add_paragraph('Rigidity — right lower extremity: ' + get_rigidity_description(pt['RIGDLORT']), style = 'List Bullet')
+
+    if pt['RIGDLOLF'] != -4:
+        document.add_paragraph('Rigidity — left lower extremity: ' + get_rigidity_description(pt['RIGDLOLF']), style = 'List Bullet')
+
+    if pt['TAPSLF'] != -4:
+        document.add_paragraph('Finger taps - left hand: ' + get_finger_taps_hand_description(pt['TAPSLF']), style = 'List Bullet')
+
+    if pt['TAPSRT'] != -4:
+        document.add_paragraph('Finger taps - right hand: ' + get_finger_taps_hand_description(pt['TAPSRT']), style = 'List Bullet')
+
+    if pt['HANDMOVR'] != -4:
+        document.add_paragraph('Hand movements - right hand: ' + get_hand_movements_description(pt['HANDMOVR']), style = 'List Bullet')
+
+    if pt['HANDMOVL'] != -4:
+        document.add_paragraph('Hand movements - left hand: ' + get_hand_movements_description(pt['HANDMOVL']), style = 'List Bullet')
+
+    if pt['HANDALTL'] != -4:
+        document.add_paragraph('Alternating movement - right hand: ' + get_alternating_movement_hand_description(pt['HANDALTL']), style = 'List Bullet')
+
+    if pt['HANDALTR'] != -4:
+        document.add_paragraph('Alternating movement - left hand: ' + get_alternating_movement_hand_description(pt['HANDALTR']), style = 'List Bullet')
+
+    if pt['LEGRT'] != -4:
+        document.add_paragraph('Leg agility - right leg: ' + get_leg_agility_leg_description(pt['LEGRT']), style = 'List Bullet')
+
+    if pt['LEGLF'] != -4:
+        document.add_paragraph('Leg agility - left leg: ' + get_leg_agility_leg_description(pt['LEGLF']), style = 'List Bullet')
+
+    if pt['ARISING'] != -4:
+        document.add_paragraph('Arising from chair: ' + get_arising_description(pt['ARISING']), style = 'List Bullet')
+
+    if pt['SLOWINGL'] != -4:
+        document.add_paragraph('Any slowing of fine motor movements of left side: ' + no_yes_notAssessed(pt['SLOWINGL']), style = 'List Bullet')
+
+    if pt['SLOWINGR'] != -4:
+        document.add_paragraph('Any slowing of fine motor movements of right side: ' + no_yes_notAssessed(pt['SLOWINGR']), style = 'List Bullet')
+
+    if pt['RIGIDL'] != -4:
+        document.add_paragraph('Rigidity - left arm: ' + no_yes_notAssessed(pt['RIGIDL']), style = 'List Bullet')
+
+    if pt['RIGIDR'] != -4:
+        document.add_paragraph('Rigidity - right arm: ' + no_yes_notAssessed(pt['RIGIDR']), style = 'List Bullet')
+
+    if pt['BRADYKIN'] != -4:
+        document.add_paragraph('Bradykinesia?: ' + get_bradykinesia_description(pt['BRADYKIN']), style = 'List Bullet')
+
+    if pt['GAIT'] != -4:
+        document.add_paragraph('Gait: ' + get_gait_description(pt['GAIT']), style = 'List Bullet')
+
+    if pt['PARKGAIT'] != -4:
+        document.add_paragraph('Parkinsonian gait disorder: ' + no_yes_notAssessed(pt['PARKGAIT']), style = 'List Bullet')
+
+    if pt['POSTURE'] != -4:
+        document.add_paragraph('Posture: ' + get_posture_description(pt['POSTURE']), style = 'List Bullet')
+
+    if pt['POSTINST'] != -4:
+        document.add_paragraph('Postural instability: ' + no_yes_notAssessed(pt['POSTINST']), style = 'List Bullet')
+
+    if pt['POSSTAB'] != -4:
+        document.add_paragraph('Postural stability: ' + get_postural_stability_description(pt['POSSTAB']), style = 'List Bullet')
+
+    document.add_heading('Geriatric Depression Scale (GDS)', level=2)
+    if pt['NOGDS'] == 1:
+        document.add_paragraph('The subject is not able to complete the GDS, based on the clinician\'s best judgment', style = 'List Bullet')
+    elif pt['NACCGDS'] == -4:
+        document.add_paragraph('GDS not collected')
+    else:
+        document.add_paragraph('GDS Score: ' + str(pt['NACCGDS']), style = 'List Bullet')
+        GDS_variables = ['SATIS', 'DROPACT', 'EMPTY', 'BORED', 'SPIRITS', 'AFRAID', 'HAPPY', 'HELPLESS', 'STAYHOME', 'MEMPROB', 'WONDRFUL', 'WRTHLESS', 'ENERGY', 'HOPELESS', 'BETTER']
+        GDS_feature_list = ["Are you basically satisfied with your life?",
+                            'Have you dropped many of your activities and interests?',
+                            'Do you feel that your life is empty?',
+                            'Do you often get bored?',
+                            'Are you in good spirits most of the time?',
+                            'Are you afraid that something bad is going to happen to you?',
+                            'Do you feel happy most of the time?',
+                            'Do you often feel helpless?',
+                            'Do you prefer to stay at home, rather than going out and doing new things?',
+                            'Do you feel you have more problems with memory than most?',
+                            'Do you think it is wonderful to be alive now?',
+                            'Do you feel pretty worthless the way you are now?',
+                            'Do you feel full of energy?',
+                            'Do you feel that your situation is hopeless?',
+                            'Do you think that most people are better off than you are?']
+        for i in range(len(GDS_variables)):
+            document.add_paragraph(GDS_feature_list[i] +': ' + get_GDS_questionare_description(pt[GDS_variables[i]]), style='List Bullet')
+
+    document.add_heading('Functional Assessment', level = 2)
+    FA_variables = ['BILLS', 'TAXES', 'SHOPPING', 'GAMES', 'STOVE', 'MEALPREP', 'EVENTS', 'PAYATTN', 'REMDATES', 'TRAVEL']
+    FA_feature_list = ['Writing checks, paying bills, or balancing a checkbook',
+                       'Assembling tax records, business affairs, or other papers',
+                       'Shopping alone for clothes, household necessities, or groceries',
+                       'Playing a game of skill such as bridge or chess, working on a hobby',
+                       'Heating water, making a cup of coffee, turning off the stove',
+                       'Preparing a balanced meal',
+                       'Keeping track of current events',
+                       'Paying attention to and understanding a TV program, book, or magazine',
+                       'Remembering appointments, family occasions, holidays, medications',
+                       'Traveling out of the neighborhood, driving, or arranging to take public transportation']
+    total_FA_score = 0
+    for variable in FA_variables:
+        total_FA_score += pt[variable]
+    document.add_paragraph('Total Functional Assessment Scale Score: ' + str(total_FA_score), style = 'List Bullet')
+    subtitle = document.add_paragraph()
+    run = subtitle.add_run('In the past four weeks, did the subject have any difficulty or need help with...')
+    run.font.italic = True
+    for i in range(len(FA_variables)):
+        document.add_paragraph(FA_feature_list[i] +': ' + get_FA_description(pt[FA_variables[i]]), style='List Bullet')
+
+    document.add_heading('Mini-Mental State Exam (MMSE)', level = 2)
+
+    if pt['MMSECOMP'] != 1:
+        document.add_paragraph('MMSE not completed')
+    else:
+        document.add_paragraph('MMSE was administered in ' + get_language_mmse_description(pt['MMSELAN']) + get_mmse_location_description(pt['MMSELOC']))
+        document.add_paragraph('Unable to complete one or more parts of the exam because of visual impairments?: ' + y_n_match(pt['MMSEVIS']), style = 'List Bullet')
+        document.add_paragraph('Unable to complete one or more parts of the exam because of hearing impairments?: ' + y_n_match(pt['MMSEHEAR']), style = 'List Bullet')
+        document.add_paragraph('Total MMSE score: ' + get_mmse_score_description(pt['NACCMMSE']), style = 'List Bullet')
+        document.add_paragraph('Orientation subscale score - Time: ' + get_mmse_score_description(pt['MMSEORDA']), style = 'List Bullet')
+        document.add_paragraph('Orientation subscale score - Place: ' + get_mmse_score_description(pt['MMSEORLO']), style = 'List Bullet')
+        document.add_paragraph('Intersecting pentagon subscale score: ' + get_mmse_score_description(pt['PENTAGON']), style = 'List Bullet')
+
+    document.add_heading('Logical Memory Test (Wechsler Memory Scale-Revised (WMS-R)', level = 2)
+    subtitle = document.add_paragraph()
+    run = subtitle.add_run('Assesses recall of an oral story (immediate recall) and recall of the same story after a 30-minute delay (delayed recall)')
+    run.font.italic = True
+    document.add_paragraph('Total number of story units recalled from this current test administration: ' + get_mmse_score_description(pt['LOGIMEM']), style = 'List Bullet')
+    document.add_paragraph('Total score from the previous test administration: ' + (lambda x: 'Not available' if x == -4 else str(x))(pt['LOGIPREV']), style = 'List Bullet')
+    document.add_paragraph('Logical Memory IIA — Delayed — Total number of story units recalled: ' + get_mmse_score_description(pt['MEMUNITS']), style = 'List Bullet')
+    document.add_paragraph('Logical Memory IIA — Delayed — Time elapsed since Logical Memory IA — Immediate: ' + (lambda x: 'Not available' if (x == -4 or x == 99) else str(x))(pt['MEMTIME']), style = 'List Bullet')
+
+    document.add_heading('Benson figure test', level = 2)
+    document.add_paragraph('Total score for copy of Benson figure: ' + get_mmse_score_description(pt['UDSBENTC']), style = 'List Bullet')
+    document.add_paragraph(stats(pt['UDSBENTC'], 15.5, 1.4, 15, 17), style="BodyText").paragraph_format.left_indent = Inches(0.3)
+    document.add_paragraph('Total score for 10- to 15-minute delayed drawing of Benson figure: ' + get_mmse_score_description(pt['UDSBENTD']), style = 'List Bullet')
+    document.add_paragraph(stats(pt['UDSBENTD'], 11.4, 3, 10, 14), style="BodyText").paragraph_format.left_indent = Inches(0.3)
+    document.add_heading('Boston Naming Test', level = 2)
+    document.add_paragraph('Total score: ' + get_mmse_score_description(pt['BOSTON']), style = 'List Bullet')
+    document.add_heading('Digit Span: From Wechsler Adult Intelligence Scale-Revised', level = 2)
+    document.add_paragraph('Digit span forward trials correct: ' + get_mmse_score_description(pt['DIGIF']), style = 'List Bullet')
+    document.add_paragraph(stats(pt['DIGIF'], 8.2, 2.4, 6, 10), style="BodyText").paragraph_format.left_indent = Inches(0.3)
+    document.add_paragraph('Digit span forward length: ' + get_mmse_score_description(pt['DIGIFLEN']), style = 'List Bullet')
+    document.add_paragraph(stats(pt['DIGIFLEN'], 6.6, 1.3, 6, 8), style="BodyText").paragraph_format.left_indent = Inches(0.3)
+    document.add_paragraph('Digit span backward trials correct: ' + get_mmse_score_description(pt['DIGIB']), style = 'List Bullet')
+    document.add_paragraph(stats(pt['DIGIB'], 7.1, 2.2, 6, 8), style="BodyText").paragraph_format.left_indent = Inches(0.3)
+    document.add_paragraph('Digit span backward length: ' + get_mmse_score_description(pt['DIGIBLEN']), style = 'List Bullet')
+    document.add_paragraph(stats(pt['DIGIBLEN'], 5, 1.3, 4, 6), style="BodyText").paragraph_format.left_indent = Inches(0.3)
+    document.add_heading('Category Fluency', level = 2)
+    document.add_paragraph('Total number of animals named in 60 seconds: ' + get_mmse_score_description(pt['ANIMALS']), style = 'List Bullet')
+    document.add_paragraph(stats(pt['ANIMALS'], 21.2, 5.6, 17, 25), style="BodyText").paragraph_format.left_indent = Inches(0.3)
+    document.add_paragraph('Total number of vegetables named in 60 seconds: ' + get_mmse_score_description(pt['VEG']), style = 'List Bullet')
+    document.add_paragraph(stats(pt['VEG'], 14.8, 4.3, 12, 17), style="BodyText").paragraph_format.left_indent = Inches(0.3)
+    document.add_heading('Trail Making Test', level = 2)
+    document.add_paragraph('Trail Making Test Part A (seconds to completion): ' + get_trail_making_description(pt['TRAILA']), style = 'List Bullet')
+    document.add_paragraph(stats(pt['TRAILA'], 31.7, 14.2, 23, 37), style="BodyText").paragraph_format.left_indent = Inches(0.3)
+    document.add_paragraph('Trail Making Test Part B (seconds to completion): ' + get_trail_making_description(pt['TRAILB']), style = 'List Bullet')
+    document.add_paragraph(stats(pt['TRAILB'], 83.7, 46.9, 55, 96), style="BodyText").paragraph_format.left_indent = Inches(0.3)
+    document.add_heading('Verbal Fluency Test', level = 2)
+    subtitle = document.add_paragraph()
+    run = subtitle.add_run('Total number of words beginning with letter \'F\' or \'L\'in 60 seconds')
+    run.font.italic = True  
+    document.add_paragraph('Total number of correct F-words and L-words: ' + get_mmse_score_description(pt['UDSVERTN']), style = 'List Bullet')
+    document.add_paragraph(stats(pt['UDSVERTN'], 28.5, 8.4, 23, 34), style="BodyText").paragraph_format.left_indent = Inches(0.3)
+    document.add_paragraph('Total number of F-word and L-word repetition errors: ' + get_mmse_score_description(pt['UDSVERTE']), style = 'List Bullet')
+    document.add_paragraph('Total number of non-F/L-words and rule violation errors: ' + get_mmse_score_description(pt['UDSVERTI']), style = 'List Bullet')
+    document.add_heading('Montreal Cognitive Assessment (MoCA)', level = 2)
+    document.add_paragraph('Total raw score: ' + (lambda value: "Test not administered" if value == 88 else "Not available" if value == -4 else str(value))(pt['MOCATOTS']), style = 'List Bullet')
+    document.add_paragraph(stats(pt['MOCATOTS'], 26.3, 2.8, 25, 28), style="BodyText").paragraph_format.left_indent = Inches(0.3)
+    document.add_paragraph('Total score (corrected for education): ' + (lambda value: "Test not administered" if value == 88 else "Not available" if value == -4 else str(value))(pt['NACCMOCA']), style = 'List Bullet')
+    document.add_paragraph(stats(pt['NACCMOCA'], 26.3, 2.8, 25, 28), style="BodyText").paragraph_format.left_indent = Inches(0.3)
+
+    
+    document.add_heading('Craft Story 21 Recall', level = 2)
+    document.add_paragraph('Craft Story 21 Recall (Immediate) — Total story units recalled, verbatim scoring: ' + get_mmse_score_description(pt['CRAFTVRS']), style = 'List Bullet')
+    document.add_paragraph(stats(pt['CRAFTVRS'], 21.8, 6.6, 17, 26), style="BodyText").paragraph_format.left_indent = Inches(0.3)
+    document.add_paragraph('Craft Story 21 Recall (Immediate) — Total story units recalled, paraphrase scoring: ' + get_mmse_score_description(pt['CRAFTURS']), style = 'List Bullet')
+    document.add_paragraph(stats(pt['CRAFTURS'], 16.1, 3.9, 14, 19), style="BodyText").paragraph_format.left_indent = Inches(0.3)
+    document.add_paragraph('Craft Story 21 Recall (Delayed) — Total story units recalled, verbatim scoring: ' + get_mmse_score_description(pt['CRAFTDVR']), style = 'List Bullet')
+    document.add_paragraph(stats(pt['CRAFTDVR'], 19, 6.6, 14, 24), style="BodyText").paragraph_format.left_indent = Inches(0.3)
+    document.add_paragraph('Craft Story 21 Recall (Delayed) — Total story units recalled, paraphrase scoring: ' + get_mmse_score_description(pt['CRAFTDRE']), style = 'List Bullet')
+    document.add_paragraph(stats(pt['CRAFTDRE'], 15, 4.2, 12, 18), style="BodyText").paragraph_format.left_indent = Inches(0.3)
+    document.add_paragraph('Craft Story 21 Recall (Delayed) — Delay time: ' + get_mmse_score_description(pt['CRAFTDTI']), style = 'List Bullet')
+    document.add_paragraph(stats(pt['CRAFTDTI'], 17.8, 3.9, 15, 20), style="BodyText").paragraph_format.left_indent = Inches(0.3)
+    document.add_paragraph('Multilingual Naming Test (MINT) — Total score: ' + get_mmse_score_description(pt['MINTTOTS']), style = 'List Bullet')
+    document.add_paragraph(stats(pt['MINTTOTS'], 29.8, 2.4, 29, 32), style="BodyText").paragraph_format.left_indent = Inches(0.3)
+
+def create_doc(pt):
+    document = Document()
+
+    document.add_heading(pt['case_number'], 0)
+    
+    demographics(pt, document)
+    vitals(pt,document)
+    past_medical_history(pt,document)
+
+
+    # PSH--------------------------------------------------------------------------------
+    document.add_heading('Past Surgical History', level=1)
+    def cvbypass(x):
+        if x == 0:
+            return 'Absent'
+        elif x == 1:
+            return 'Recent/Active'
+        elif x ==2:
+            return 'Remote/Inactive'
+        else:
+            return 'Unknown'
+    document.add_paragraph('cardiac bypass procedure: ' + cvbypass(pt['CVBYPASS']), style='List Bullet')
+    def cvpacdef(x):
+        if x == 0:
+            return 'Absent'
+        elif x == 1:
+            return 'Recent/Active'
+        elif x ==2:
+            return 'Remote/Inactive'
+        else:
+            return 'Unknown'
+    document.add_paragraph('pacemaker placement: ' + cvpacdef(pt['CVPACDEF']), style='List Bullet')
+    def cvangio(x):
+        if x == 0:
+            return 'Absent'
+        elif x == 1:
+            return 'Recent/Active'
+        elif x ==2:
+            return 'Remote/Inactive'
+        else:
+            return 'Unknown'
+    document.add_paragraph('Angioplasty or endarterectomy or stent: ' + cvangio(pt['CVANGIO']), style='List Bullet')
+    def cvhvalve(x):
+        if x == 0:
+            return 'Absent'
+        elif x == 1:
+            return 'Recent/Active'
+        elif x ==2:
+            return 'Remote/Inactive'
+        else:
+            return 'Unknown'
+    document.add_paragraph('Heart valve replacement or repair: ' + cvhvalve(pt['CVHVALVE']), style='List Bullet')
+
+    # Meds--------------------------------------------------------------------------------
+    document.add_heading('Medications (current)', level=1)
+    def anymeds(x):
+        if x == 0:
+            return 'No'
+        elif x == 1:
+            return 'Yes'
+        else:
+            return 'unknown'
+    document.add_paragraph('Currently taking any medications: ' + anymeds(pt['ANYMEDS']), style='List Bullet')
+    list_o_meds = []
+    def meds_names(x):
+        for i in range(1,41):
+            name = 'DRUG' + chr(i)
+            list_o_meds.append(pt[name]) 
+    listToStr = ' '.join([str(i) for i in list_o_meds])
+    document.add_paragraph('Current medications: ' + listToStr, style='List Bullet')
+    def ahtn(x):
+        if x == 0:
+            return 'No'
+        elif x == 1:
+            return 'Yes'
+        else:
+            return 'unknown'
+    document.add_paragraph('Currently taking anti-hypertensives: ' + ahtn(pt['NACCAHTN']), style='List Bullet')
+    def acei(x):
+        if x == 0:
+            return 'No'
+        elif x == 1:
+            return 'Yes'
+        else:
+            return 'unknown'
+    document.add_paragraph('Currently taking ACEi: ' + acei(pt['NACCACEI']), style = 'List Bullet')
+    def aada(x):
+        if x == 0:
+            return 'No'
+        elif x == 1:
+            return 'Yes'
+        else:
+            return 'unknown'
+    document.add_paragraph('Currently taking antiadrenergic agent: ' + aada(pt['NACCAAAS']), style = 'List Bullet')
+    def beta(x):
+        if x == 0:
+            return 'No'
+        elif x == 1:
+            return 'Yes'
+        else:
+            return 'unknown'
+    document.add_paragraph('Currently taking beta blockers: ' + beta(pt['NACCBETA']), style = 'List Bullet')
+    def ccb(x):
+        if x == 0:
+            return 'No'
+        elif x == 1:
+            return 'Yes'
+        else:
+            return 'unknown'
+    document.add_paragraph('Currently taking calcium channel blockers: ' + ccb(pt['NACCCCBS']), style = 'List Bullet')
+    def diuer(x):
+        if x == 0:
+            return 'No'
+        elif x == 1:
+            return 'Yes'
+        else:
+            return 'unknown'
+    document.add_paragraph('Currently taking diuertics: ' + diuer(pt['NACCDIUR']), style = 'List Bullet')
+    def vaso(x):
+        if x == 0:
+            return 'No'
+        elif x == 1:
+            return 'Yes'
+        else:
+            return 'unknown'
+    document.add_paragraph('Currently taking vasodilator: ' + vaso(pt['NACCVASD']), style = 'List Bullet')
+    def angioII(x):
+        if x == 0:
+            return 'No'
+        elif x == 1:
+            return 'Yes'
+        else:
+            return 'unknown'
+    document.add_paragraph('Currently taking angiotensin II inhibitor: ' + angioII(pt['NACCANGI']), style = 'List Bullet')
+    def lipl(x):
+        if x == 0:
+            return 'No'
+        elif x == 1:
+            return 'Yes'
+        else:
+            return 'unknown'
+    document.add_paragraph('Currently taking lipid lowering medication: ' + lipl(pt['NACCLIPL']), style = 'List Bullet')
+    def nsaid(x):
+        if x == 0:
+            return 'No'
+        elif x == 1:
+            return 'Yes'
+        else:
+            return 'unknown'
+    document.add_paragraph('Currently taking NSAID: ' + nsaid(pt['NACCNSD']), style = 'List Bullet')
+    def anticoag(x):
+        if x == 0:
+            return 'No'
+        elif x == 1:
+            return 'Yes'
+        else:
+            return 'unknown'
+    document.add_paragraph('Currently taking anticoagulant: ' + anticoag(pt['NACCAC']), style = 'List Bullet')
+    def antidep(x):
+        if x == 0:
+            return 'No'
+        elif x == 1:
+            return 'Yes'
+        else:
+            return 'unknown'
+    document.add_paragraph('Currently taking antidepressent: ' + antidep(pt['NACCADEP']), style = 'List Bullet')
+    def antipsych(x):
+        if x == 0:
+            return 'No'
+        elif x == 1:
+            return 'Yes'
+        else:
+            return 'unknown'
+    document.add_paragraph('Currently taking antipsychotic: ' + antipsych(pt['NACCAPSY']), style = 'List Bullet')
+    def aanx(x):
+        if x == 0:
+            return 'No'
+        elif x == 1:
+            return 'Yes'
+        else:
+            return 'unknown'
+    document.add_paragraph('Currently taking an anxiolytic, sedative, or hypnotic agent: ' + aanx(pt['NACCAANX']), style = 'List Bullet')
+    def emd(x):
+        if x == 0:
+            return 'No'
+        elif x == 1:
+            return 'Yes'
+        else:
+            return 'unknown'
+    document.add_paragraph('Currently taking estrogen hormone therapy: ' + emd(pt['NACCEMD']), style = 'List Bullet')
+
+    # FH--------------------------------------------------------------------------------
+    document.add_heading('Family History', level=1)
+    def fam(x):
+        if x == 0:
+            return 'No'
+        elif x == 1:
+            return 'Yes'
+        else:
+            return 'unknown'
+    document.add_paragraph('Report of a first-degree family member with cognitive impairment : ' + fam(pt['NACCFAM']), style='List Bullet')
+    def mother(x):
+        if x == 0:
+            return 'No'
+        elif x == 1:
+            return 'Yes'
+        else:
+            return 'unknown'
+    document.add_paragraph('Mother with cognitive impairment : ' + mother(pt['NACCMOM']), style='List Bullet')
+    def father(x):
+        if x == 0:
+            return 'No'
+        elif x == 1:
+            return 'Yes'
+        else:
+            return 'unknown'
+    document.add_paragraph('Father with cognitive impairment : ' + father(pt['NACCDAD']), style='List Bullet')
+    def am(x):
+        if x == 0:
+            return 'No'
+        elif x == 1:
+            return 'Yes, APP'
+        elif x == 2:
+            return 'Yes, PS-1 (PSEN-1)'
+        elif x == 3:
+            return 'Yes, PS-2 (PSEN-2)'
+        elif x == 8:
+            return 'Yes, other (specify)'
+        else:
+            return 'Unknown'
+    document.add_paragraph('Known familial AD mutation : ' + am(pt['NACCAM']), style='List Bullet')
+    def cams(x):
+        if x == 1:
+            return 'Family report (no test documentation available)'
+        elif x == 2:
+            return 'Commercial test documentation'
+        elif x == 3:
+            return 'Research lab test documentation'
+        elif x == 8:
+            return 'Other'
+        else:
+            return 'Unknown'
+    document.add_paragraph('AD mutation was determined by : ' + cams(pt['NACCAMS']), style='List Bullet')
+    def fm(x):
+        if x == 0:
+            return 'No'
+        elif x == 1:
+            return 'Yes, MAPT'
+        elif x == 2:
+            return 'Yes, PGRN'
+        elif x == 3:
+            return 'Yes, C9orf72'
+        elif x == 4:
+            return 'Yes, FUS'
+        elif x == 8:
+            return 'Yes, other (specify)'
+        else:
+            return 'Unknown'
+    document.add_paragraph('Known familial FTLD mutation : ' + fm(pt['NACCFM']), style='List Bullet')
+    def fms(x):
+        if x == 1:
+            return 'Family report (no test documentation available)'
+        elif x == 2:
+            return 'Commercial test documentation'
+        elif x == 3:
+            return 'Research lab test documentation'
+        elif x == 8:
+            return 'Other'
+        else:
+            return 'Unknown'
+    document.add_paragraph('FTLD mutation was determined by : ' + fms(pt['NACCFMS']), style='List Bullet')
+    def com(x):
+        if x == 0:
+            return 'No'
+        elif x == 1:
+            return 'Yes'
+        else:
+            return 'unknown'
+    document.add_paragraph('Any other known familial dementia mutation : ' + com(pt['NACCOM']), style='List Bullet')
+    def oms(x):
+        if x == 1:
+            return 'Family report (no test documentation available)'
+        elif x == 2:
+            return 'Commercial test documentation'
+        elif x == 3:
+            return 'Research lab test documentation'
+        elif x == 8:
+            return 'Other'
+        else:
+            return 'Unknown'
+    document.add_paragraph('Other mutation was determined by : ' + oms(pt['NACCOMS']), style='List Bullet')
+
+    social_history(pt, document)
+    testing(pt, document)
+
+    document.add_heading('Additional information', level=1)
+    
+    document.save('docs/' + pt['case_number'] + '/' + pt['case_number']+ '_case_report.docx')
+
+for _, pt in cases_csv.iterrows():
+    if not os.path.exists('docs/'+ pt['case_number']):
+        os.makedirs('docs/'+ pt['case_number'])
+    create_doc(pt)
