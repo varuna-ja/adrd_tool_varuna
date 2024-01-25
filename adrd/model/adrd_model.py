@@ -53,9 +53,9 @@ def _manage_ctx_fit(func):
 class ADRDModel(BaseEstimator):
     """Primary model class for ADRD Tool.
 
-    ADRD Model allows user to train, validate on a given set of diagnositic
-    informataion. This is a subclass of `sklearn.base.BaseEstimator<https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html>`
-    to follow the API design conventions from scikit-learn.
+    ADRDModel is designed to enable users to train and validate using a specific set of diagnostic information. 
+    As a subclass of `sklearn.base.BaseEstimator<https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html>`_, 
+    it adheres to the API design conventions established by scikit-learn.
     """    
     def __init__(self,
         src_modalities: dict[str, dict[str, Any]],
@@ -96,8 +96,6 @@ class ADRDModel(BaseEstimator):
         _amp_enabled: bool = False,
     ) -> None:  
         """Create a new ADRD model.
-        
-        The API design follows the conventions from scikit-learn.
 
         :param src_modalities: _description_
         :type src_modalities: dict[str, dict[str, Any]]
