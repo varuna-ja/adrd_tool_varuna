@@ -90,13 +90,82 @@ class ADRDModel(BaseEstimator):
         _dataloader_num_workers: int = 4,
         _amp_enabled: bool = False,
     ) -> None:  
-        """
-        Create a new ADRD model.
+        """Create a new ADRD model
+        
+        The API design follows the conventions from scikit-learn.
 
-        :param src_modalities: The 1st parameter.
-        :type src_modalities: dict
-        :param tgt_modalities: The 2nd parameter.
-        :type tgt_modalities: dict 
+        :param src_modalities: _description_
+        :type src_modalities: dict[str, dict[str, Any]]
+        :param tgt_modalities: _description_
+        :type tgt_modalities: dict[str, dict[str, Any]]
+        :param label_fractions: _description_
+        :type label_fractions: dict[str, float]
+        :param d_model: _description_, defaults to 32
+        :type d_model: int, optional
+        :param nhead: _description_, defaults to 1
+        :type nhead: int, optional
+        :param num_encoder_layers: _description_, defaults to 1
+        :type num_encoder_layers: int, optional
+        :param num_decoder_layers: _description_, defaults to 1
+        :type num_decoder_layers: int, optional
+        :param num_epochs: _description_, defaults to 32
+        :type num_epochs: int, optional
+        :param batch_size: _description_, defaults to 8
+        :type batch_size: int, optional
+        :param batch_size_multiplier: _description_, defaults to 1
+        :type batch_size_multiplier: int, optional
+        :param lr: _description_, defaults to 1e-2
+        :type lr: float, optional
+        :param weight_decay: _description_, defaults to 0.0
+        :type weight_decay: float, optional
+        :param beta: _description_, defaults to 0.9999
+        :type beta: float, optional
+        :param gamma: _description_, defaults to 2.0
+        :type gamma: float, optional
+        :param criterion: _description_, defaults to None
+        :type criterion: str | None, optional
+        :param device: _description_, defaults to 'cpu'
+        :type device: str, optional
+        :param cuda_devices: _description_, defaults to [1]
+        :type cuda_devices: list, optional
+        :param img_net: _description_, defaults to None
+        :type img_net: str | None, optional
+        :param imgnet_layers: _description_, defaults to 2
+        :type imgnet_layers: int | None, optional
+        :param img_size: _description_, defaults to 128
+        :type img_size: int | None, optional
+        :param fusion_stage: _description_, defaults to 'middle'
+        :type fusion_stage: str, optional
+        :param patch_size: _description_, defaults to 16
+        :type patch_size: int | None, optional
+        :param imgnet_ckpt: _description_, defaults to None
+        :type imgnet_ckpt: str | None, optional
+        :param train_imgnet: _description_, defaults to False
+        :type train_imgnet: bool, optional
+        :param ckpt_path: _description_, defaults to '/home/skowshik/ADRD_repo/adrd_tool/adrd/dev/ckpt/ckpt.pt'
+        :type ckpt_path: str, optional
+        :param load_from_ckpt: _description_, defaults to True
+        :type load_from_ckpt: bool, optional
+        :param save_intermediate_ckpts: _description_, defaults to False
+        :type save_intermediate_ckpts: bool, optional
+        :param data_parallel: _description_, defaults to False
+        :type data_parallel: bool, optional
+        :param verbose: _description_, defaults to 0
+        :type verbose: int, optional
+        :param wandb_: _description_, defaults to 0
+        :type wandb_: int, optional
+        :param balanced_sampling: _description_, defaults to False
+        :type balanced_sampling: bool, optional
+        :param label_distribution: _description_, defaults to {}
+        :type label_distribution: dict, optional
+        :param ranking_loss: _description_, defaults to False
+        :type ranking_loss: bool, optional
+        :param _device_ids: _description_, defaults to None
+        :type _device_ids: list | None, optional
+        :param _dataloader_num_workers: _description_, defaults to 4
+        :type _dataloader_num_workers: int, optional
+        :param _amp_enabled: _description_, defaults to False
+        :type _amp_enabled: bool, optional
         """
         # for multiprocessing
         self._rank = 0
@@ -620,7 +689,13 @@ class ADRDModel(BaseEstimator):
             return logits, proba, [{k: int(smp[k] > thr[k]) for k in self.tgt_modalities} for smp in proba]
 
     def save(self, filepath: str, epoch: int) -> None:
-        ''' ... '''
+        """Save the model
+
+        :param filepath: _description_
+        :type filepath: str
+        :param epoch: _description_
+        :type epoch: int
+        """        
         check_is_fitted(self)
         if self.data_parallel:
             state_dict = self.net_.module.state_dict()
