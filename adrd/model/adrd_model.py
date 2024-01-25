@@ -695,7 +695,7 @@ class ADRDModel(BaseEstimator):
             return logits, proba, [{k: int(smp[k] > thr[k]) for k in self.tgt_modalities} for smp in proba]
 
     def save(self, filepath: str, epoch: int) -> None:
-        """Save model.
+        """Save the model to the given file stream.
 
         :param filepath: _description_
         :type filepath: str
@@ -732,7 +732,7 @@ class ADRDModel(BaseEstimator):
         torch.save(state_dict, filepath)
 
     def load(self, filepath: str, map_location: str = 'cpu', img_dict=None) -> None:
-        """Load model.
+        """Load a model from the given file stream.
 
         :param filepath: _description_
         :type filepath: str
@@ -800,7 +800,7 @@ class ADRDModel(BaseEstimator):
         self.net_.to(self.device)
 
     def to(self, device: str) -> Self:
-        """Mount model to the given device. 
+        """Mount the model to the given device. 
 
         :param device: _description_
         :type device: str
