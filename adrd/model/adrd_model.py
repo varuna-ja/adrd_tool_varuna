@@ -51,7 +51,12 @@ def _manage_ctx_fit(func):
 
 
 class ADRDModel(BaseEstimator):
-    ''' ... '''
+    """_summary_
+
+    This is the primary explainer interface for the SHAP library. It takes any 
+    combination of a model and masker and returns a callable subclass object 
+    that implements the particular estimation algorithm that was chosen.
+    """    
     def __init__(self,
         src_modalities: dict[str, dict[str, Any]],
         tgt_modalities: dict[str, dict[str, Any]],
