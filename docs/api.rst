@@ -8,7 +8,6 @@ This page contains the API reference for public objects and functions in ADRD To
 
 .. autosummary::
    :toctree: generated
-   :recursive:
 
    adrd.model.ADRDModel
 
