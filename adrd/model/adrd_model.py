@@ -90,7 +90,7 @@ class ADRDModel(BaseEstimator):
         _dataloader_num_workers: int = 4,
         _amp_enabled: bool = False,
     ) -> None:  
-        """Create a new ADRD model
+        """Create a new ADRD model.
         
         The API design follows the conventions from scikit-learn.
 
@@ -689,7 +689,7 @@ class ADRDModel(BaseEstimator):
             return logits, proba, [{k: int(smp[k] > thr[k]) for k in self.tgt_modalities} for smp in proba]
 
     def save(self, filepath: str, epoch: int) -> None:
-        """Save the model
+        """Save model.
 
         :param filepath: _description_
         :type filepath: str
@@ -726,7 +726,15 @@ class ADRDModel(BaseEstimator):
         torch.save(state_dict, filepath)
 
     def load(self, filepath: str, map_location: str = 'cpu', img_dict=None) -> None:
-        ''' ... '''
+        """Load model.
+
+        :param filepath: _description_
+        :type filepath: str
+        :param map_location: _description_, defaults to 'cpu'
+        :type map_location: str, optional
+        :param img_dict: _description_, defaults to None
+        :type img_dict: _type_, optional
+        """        
         # load state_dict
         state_dict = torch.load(filepath, map_location=map_location)
 
@@ -786,7 +794,13 @@ class ADRDModel(BaseEstimator):
         self.net_.to(self.device)
 
     def to(self, device: str) -> Self:
-        ''' Mount model to the given device. '''
+        """Mount model to the given device. 
+
+        :param device: _description_
+        :type device: str
+        :return: _description_
+        :rtype: Self
+        """        
         self.device = device
         if hasattr(self, 'model'): self.net_ = self.net_.to(device)
         if hasattr(self, 'img_model'): self.img_model = self.img_model.to(device)
@@ -794,7 +808,19 @@ class ADRDModel(BaseEstimator):
     
     @classmethod
     def from_ckpt(cls, filepath: str, device='cpu', img_dict=None) -> Self:
-        ''' ... '''
+        """Create a new ADRD model and load parameters from the checkpoint. 
+
+        This is an alternative constructor.
+
+        :param filepath: _description_
+        :type filepath: str
+        :param device: _description_, defaults to 'cpu'
+        :type device: str, optional
+        :param img_dict: _description_, defaults to None
+        :type img_dict: _type_, optional
+        :return: _description_
+        :rtype: Self
+        """        
         obj = cls(None, None, None,device=device)
         if device == 'cuda':
             obj.device = "{}:{}".format(obj.device, str(obj.cuda_devices[0]))
