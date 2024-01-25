@@ -54,7 +54,7 @@ class ADRDModel(BaseEstimator):
     """Primary model class for ADRD Tool.
 
     ADRDModel is designed to enable users to train and validate using a specific set of diagnostic information. 
-    As a subclass of `sklearn.base.BaseEstimator<sklearn_link>`_, 
+    As a subclass of `sklearn.base.BaseEstimator`, 
     it adheres to the API design conventions established by scikit-learn.
     """    
     def __init__(self,
