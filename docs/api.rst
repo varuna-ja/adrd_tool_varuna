@@ -10,3 +10,5 @@ This page contains the API reference for public objects and functions in ADRD To
    :toctree: generated
 
    adrd.model.ADRDModel
+
+.. _sklearn_link: https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html
