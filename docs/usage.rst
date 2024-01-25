@@ -12,7 +12,7 @@ To use ADRD tool, first install it using pip:
 
    (.venv) $ pip install git+https://github.com/vkola-lab/adrd_tool.git
 
-.. _examples
+.. _examples:
 
 Examples
 --------
