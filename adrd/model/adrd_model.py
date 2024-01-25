@@ -51,11 +51,11 @@ def _manage_ctx_fit(func):
 
 
 class ADRDModel(BaseEstimator):
-    """_summary_
+    """Primary model class for ADRD Tool.
 
-    This is the primary explainer interface for the SHAP library. It takes any 
-    combination of a model and masker and returns a callable subclass object 
-    that implements the particular estimation algorithm that was chosen.
+    ADRD Model allows user to train, validate on a given set of diagnositic
+    informataion. This is a subclass of `sklearn.base.BaseEstimator<https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html>`
+    to follow the API design conventions from scikit-learn.
     """    
     def __init__(self,
         src_modalities: dict[str, dict[str, Any]],
