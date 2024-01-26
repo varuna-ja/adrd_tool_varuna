@@ -51,7 +51,7 @@ def _manage_ctx_fit(func):
 
 
 class ADRDModel(BaseEstimator):
-    """Primary model class for ADRD framework. TEST
+    """Primary model class for ADRD framework.
 
     The ADRDModel encapsulates the core pipeline of the ADRD framework, 
     permitting users to train and validate with the provided data. Designed for 
