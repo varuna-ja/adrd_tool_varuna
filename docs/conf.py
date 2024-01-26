@@ -16,7 +16,7 @@ extensions = [
     'sphinx.ext.intersphinx',
 ]
 
-autodoc_default_options = {"members": True, "inherited-members": True}
+autodoc_default_options = {"members": True, "inherited-members": False}
 autosummary_generate = True
 
 intersphinx_mapping = {
