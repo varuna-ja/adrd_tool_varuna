@@ -63,9 +63,11 @@ def parser():
     parser.add_argument("--patch_size", type=int, help="patch size")
     parser.add_argument('--ckpt_path', default='/home/skowshik/ADRD_repo/adrd_tool/dev/ckpt/revised_labels/ckpt.pt', type=str,
         help='Please specify the ckpt path')
-    
+    parser.add_argument('--load_from_ckpt', action="store_true", help="Set to True to load model from checkpoint.")
+    parser.add_argument('--save_intermediate_ckpts', action="store_true", help="Set to True to save intermediate model checkpoints.")
     parser.add_argument('--wandb', action="store_true", help="Set to True to init wandb logging.")
     parser.add_argument('--balanced_sampling', action="store_true", help="Set to True for balanced sampling.")
+    parser.add_argument('--ranking_loss', action="store_true", help="Set to True to apply ranking loss.")
     parser.add_argument('--parallel', action='store_true', default=False, help='Set True for DP training.')
     parser.add_argument('--d_model', default=64, type=int,
         help='Please specify the dimention of the feature embedding')
@@ -80,6 +82,8 @@ def parser():
     parser.add_argument('--gamma', default=2, type=float,
         help='Please specify the gamma value for the focal loss')
     parser.add_argument('--mri_type', type=str, choices=['SEQ', 'ALL'], help="SEQ: sequence specific, ALL: sequence independent")
+    parser.add_argument('--weight_decay', default=0.0, type=float,
+        help='Please specify the weight decay (optional)')
     args = parser.parse_args()
     return args
 
@@ -94,6 +98,10 @@ if args.img_net == 'None':
     
 # other_path = '/projectnb/ivc-ml/dlteif/Raw_MRIs'
 other_path = '/SeaExpCIFS/Raw_MRIs/ALL_nii'
+
+save_path = '/'.join(args.ckpt_path.split('/')[:-1])
+if not os.path.exists(save_path):
+    os.makedirs(save_path)
 
 if args.img_mode in [0,1,2]:
     other_3d_mris = set()
@@ -181,11 +189,6 @@ class FilterImages:
     def __call__(self, data):
         image_data = data["image"]
         try:
-            # check = nib.load(image_data).get_fdata()
-            # print(len(check.shape))
-            # if len(check.shape) > 3:
-            #     return None
-            
             return self.transforms(data)
         except Exception as e:
             print(f"Error processing image: {image_data}{e}")
@@ -227,9 +230,9 @@ mdl = ADRDModel(
     d_model = args.d_model,
     nhead = args.nhead,
     num_epochs = args.num_epochs,
-    batch_size = args.batch_size, # 64, 
+    batch_size = args.batch_size, 
     lr = args.lr,
-    weight_decay = 0.01,
+    weight_decay = args.weight_decay,
     gamma = args.gamma,
     criterion = 'AUC (ROC)',
     device = 'cuda',
@@ -242,13 +245,13 @@ mdl = ADRDModel(
     patch_size = args.patch_size,
     ckpt_path = ckpt_path,
     train_imgnet = args.train_imgnet,
-    load_from_ckpt = False,
-    save_intermediate_ckpts = True,
+    load_from_ckpt = args.load_from_ckpt,
+    save_intermediate_ckpts = args.save_intermediate_ckpts,
     data_parallel = False,
     verbose = 4,
     wandb_ = args.wandb,
     label_distribution = label_distribution,
-    ranking_loss = True,
+    ranking_loss = args.ranking_loss,
     # k = 5,
     _amp_enabled = False,
     _dataloader_num_workers = 1,
@@ -261,5 +264,4 @@ if args.img_mode == 0 or args.img_mode == 2:
     mdl.fit(dat_trn.features, dat_vld.features, dat_trn.labels, dat_vld.labels, img_train_trans=trn_filter_transform, img_vld_trans=vld_filter_transform, img_mode=args.img_mode)
 else:
     mdl.fit(dat_trn.features, dat_vld.features, dat_trn.labels, dat_vld.labels, img_train_trans=None, img_vld_trans=None, img_mode=args.img_mode)
-# mdl.fit(dat_trn.features, dat_trn.labels)
-# mdl.save(ckpt_path)
+

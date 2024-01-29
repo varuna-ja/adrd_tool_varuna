@@ -51,7 +51,7 @@ class DropoutMasker(Masker):
         modalities: dict[str, dict[str, Any]],
         dat: list[dict[str, int | NDArray[np.float32] | None]],
         dropout_rate: float = .5,
-        dropout_strategy: str = 'compensated',
+        dropout_strategy: str = 'permutation',
     ) -> None:
         ''' ... '''
         super().__init__(modalities)

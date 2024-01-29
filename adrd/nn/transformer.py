@@ -218,9 +218,6 @@ class Transformer(torch.nn.Module):
         emb_src = self.pe(emb_src)
         # print('emb_src + pe: ', emb_src.size())
         
-        
-        
-
         # target embedding
         # print('emb_aux: ', self.emb_aux.size())
         emb_tgt = self.emb_aux.repeat(1, N, 1)

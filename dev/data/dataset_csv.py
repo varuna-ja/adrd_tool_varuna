@@ -21,7 +21,7 @@ import random
 
 value_mapping = {
     'his_SEX':          {'female': 0, 'male': 1},
-    'his_HISPANIC':     {'no': 0, 'yes': 1, 1: 1, 2: 0, 3: np.NaN, '1': 1, '2': 0, '3': np.NaN, '1.0': 1, '2.0': 0, '3.0':np.NaN},
+    'his_HISPANIC':     {'no': 0, 'yes': 1},
     'his_NACCNIHR':     {'whi': 0, 'blk': 1, 'asi': 2, 'ind': 3, 'haw': 4, 'mul': 5},
     'his_RACE':         {'whi': 0, 'blk': 1, 'asi': 2, 'ind': 3, 'haw': 4, 'oth': 5},
     'his_RACESEC':      {'whi': 0, 'blk': 1, 'asi': 2, 'ind': 3, 'haw': 4, 'oth': 5},
@@ -35,12 +35,12 @@ label_names = ['NC', 'MCI', 'DE', 'AD', 'LBD', 'VD', 'PRD', 'FTD', 'NPH', 'SEF',
 # other_path = '/projectnb/ivc-ml/dlteif/Raw_MRIs'
 
 # uncomment this to use on echo
-nacc_mri_info = "./clinician_review/mri_3d.json"
+nacc_mri_info = "../clinician_review/mri_3d.json"
 other_path = '/SeaExpCIFS/Raw_MRIs/ALL_nii'
 
 class CSVDataset:
 
-    def __init__(self, dat_file, cnf_file, mode=0, img_mode=0, dat_trn=None, mri_type='SEQ', other_3d_mris=None, arch=None, emb_path='/data_1/dlteif/SwinUNETR_MRI_stripped_emb/', transforms=None, stripped=False):
+    def __init__(self, dat_file, cnf_file, mode=0, img_mode=0, dat_trn=None, mri_type='ALL', other_3d_mris=None, arch=None, emb_path='/data_1/dlteif/SwinUNETR_MRI_stripped_emb/', transforms=None, stripped=True):
         ''' ... '''
         # load data csv
         if isinstance(dat_file, str):

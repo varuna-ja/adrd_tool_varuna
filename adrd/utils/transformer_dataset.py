@@ -93,12 +93,12 @@ class TransformerDataset(torch.utils.data.Dataset):
 
         return x_imp, y_imp, mask_x, mask_y
     
-    @property
+    @cached_property
     def imputer_src(self) -> Imputer:
         ''' imputer object '''
         raise NotImplementedError
     
-    @property
+    @cached_property
     def imputer_tgt(self) -> Imputer:
         ''' imputer object '''
         pass
@@ -156,7 +156,7 @@ class TransformerTrainingDataset(TransformerDataset):
         src_modalities: dict[str, dict[str, Any]],
         tgt_modalities: dict[str, dict[str, Any]],
         dropout_rate: float = .5,
-        dropout_strategy: str = 'compensated',
+        dropout_strategy: str = 'permutation',
         img_transform: Any | None = None,
     ) -> None:
         ''' ... '''
@@ -280,7 +280,7 @@ class TransformerBalancedTrainingDataset(TransformerTrainingDataset):
         src_modalities: dict[str, dict[str, Any]],
         tgt_modalities: dict[str, dict[str, Any]],
         dropout_rate: float = .5,
-        dropout_strategy: str = 'compensated',
+        dropout_strategy: str = 'permutation',
         img_transform: Any | None = None,
     ) -> None:
         ''' ... '''
@@ -329,7 +329,7 @@ class Transformer2ndOrderBalancedTrainingDataset(TransformerTrainingDataset):
         src_modalities: dict[str, dict[str, Any]],
         tgt_modalities: dict[str, dict[str, Any]],
         dropout_rate: float = .5,
-        dropout_strategy: str = 'compensated',
+        dropout_strategy: str = 'permutation',
         img_transform: Any | None = None,
     ) -> None:
         """ ... """

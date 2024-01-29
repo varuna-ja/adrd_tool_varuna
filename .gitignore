@@ -135,6 +135,7 @@ dmypy.json
 *.pe*
 # ckpt folder
 /adrd/ckpt/
+/dev/ckpt/
 # /adrd/ckpt/*
 # !/adrd/ckpt/dynamic_calibrated_classifier_nonimg.pkl
 # !/adrd/ckpt/transformer_nonimg.pt

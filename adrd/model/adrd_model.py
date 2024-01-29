@@ -84,8 +84,8 @@ class ADRDModel(BaseEstimator):
         patch_size: int | None = 16,
         imgnet_ckpt: str | None = None,
         train_imgnet: bool = False,
-        ckpt_path: str = '/home/skowshik/ADRD_repo/adrd_tool/adrd/dev/ckpt/ckpt.pt',
-        load_from_ckpt: bool = True,
+        ckpt_path: str = './adrd_tool/adrd/dev/ckpt/ckpt.pt',
+        load_from_ckpt: bool = False,
         save_intermediate_ckpts: bool = False,
         data_parallel: bool = False,
         verbose: int = 0,
@@ -108,31 +108,31 @@ class ADRDModel(BaseEstimator):
         :type label_fractions: dict[str, float]
         :param d_model: _description_, defaults to 32
         :type d_model: int, optional
-        :param nhead: _description_, defaults to 1
+        :param nhead: number of transformer heads, defaults to 1
         :type nhead: int, optional
-        :param num_encoder_layers: _description_, defaults to 1
+        :param num_encoder_layers: number of encoder layers, defaults to 1
         :type num_encoder_layers: int, optional
-        :param num_decoder_layers: _description_, defaults to 1
+        :param num_decoder_layers: number of decoder layers, defaults to 1
         :type num_decoder_layers: int, optional
-        :param num_epochs: _description_, defaults to 32
+        :param num_epochs: number of training epochs, defaults to 32
         :type num_epochs: int, optional
-        :param batch_size: _description_, defaults to 8
+        :param batch_size: batch size, defaults to 8
         :type batch_size: int, optional
         :param batch_size_multiplier: _description_, defaults to 1
         :type batch_size_multiplier: int, optional
-        :param lr: _description_, defaults to 1e-2
+        :param lr: learning rate, defaults to 1e-2
         :type lr: float, optional
         :param weight_decay: _description_, defaults to 0.0
         :type weight_decay: float, optional
         :param beta: _description_, defaults to 0.9999
         :type beta: float, optional
-        :param gamma: _description_, defaults to 2.0
+        :param gamma: The focusing parameter for the focal loss. Higher values of gamma make easy-to-classify examples contribute less to the loss relative to hard-to-classify examples. Must be non-negative., defaults to 2.0
         :type gamma: float, optional
-        :param criterion: _description_, defaults to None
+        :param criterion: The criterion to select the best model, defaults to None
         :type criterion: str | None, optional
-        :param device: _description_, defaults to 'cpu'
+        :param device: 'cuda' or 'cpu', defaults to 'cpu'
         :type device: str, optional
-        :param cuda_devices: _description_, defaults to [1]
+        :param cuda_devices: A list of gpu numbers to data parallel training. The device must be set to 'cuda' and data_parallel must be set to True, defaults to [1]
         :type cuda_devices: list, optional
         :param img_net: _description_, defaults to None
         :type img_net: str | None, optional
@@ -146,19 +146,19 @@ class ADRDModel(BaseEstimator):
         :type patch_size: int | None, optional
         :param imgnet_ckpt: _description_, defaults to None
         :type imgnet_ckpt: str | None, optional
-        :param train_imgnet: _description_, defaults to False
+        :param train_imgnet: Set to True to finetune the img_net backbone, defaults to False
         :type train_imgnet: bool, optional
-        :param ckpt_path: _description_, defaults to '/home/skowshik/ADRD_repo/adrd_tool/adrd/dev/ckpt/ckpt.pt'
+        :param ckpt_path: The model checkpoint point path, defaults to './adrd_tool/adrd/dev/ckpt/ckpt.pt'
         :type ckpt_path: str, optional
-        :param load_from_ckpt: _description_, defaults to True
+        :param load_from_ckpt: Set to True to load the model weights from checkpoint ckpt_path, defaults to False
         :type load_from_ckpt: bool, optional
-        :param save_intermediate_ckpts: _description_, defaults to False
+        :param save_intermediate_ckpts: Set to True to save intermediate model checkpoints, defaults to False
         :type save_intermediate_ckpts: bool, optional
-        :param data_parallel: _description_, defaults to False
+        :param data_parallel: Set to True to enable data parallel trsining, defaults to False
         :type data_parallel: bool, optional
         :param verbose: _description_, defaults to 0
         :type verbose: int, optional
-        :param wandb_: _description_, defaults to 0
+        :param wandb_: Set to 1 to track the loss and accuracy curves on wandb, defaults to 0
         :type wandb_: int, optional
         :param balanced_sampling: _description_, defaults to False
         :type balanced_sampling: bool, optional
@@ -242,7 +242,7 @@ class ADRDModel(BaseEstimator):
                 'Shared CNN': 'Yes',
                 }
             )
-            wandb.run.log_code("/home/skowshik/ADRD_repo/pipeline_v1_main/adrd_tool")
+            wandb.run.log_code(".")
         else:
             wandb.init(mode="disabled") 
         # for PyTorch computational efficiency
@@ -283,7 +283,7 @@ class ADRDModel(BaseEstimator):
             if self.label_fractions[k] >= 0.3:
                 alpha = -1
             else:
-                alpha = pow((1 - self.label_fractions[k]), self.gamma)
+                alpha = pow((1 - self.label_fractions[k]), 2)
             # alpha = -1
             self.loss_fn[k] = nn.SigmoidFocalLoss(
                 alpha = alpha,
@@ -826,7 +826,7 @@ class ADRDModel(BaseEstimator):
         :type img_dict: _type_, optional
         :return: _description_
         :rtype: Self
-        """        
+        """ 
         obj = cls(None, None, None,device=device)
         if device == 'cuda':
             obj.device = "{}:{}".format(obj.device, str(obj.cuda_devices[0]))
@@ -886,7 +886,6 @@ class ADRDModel(BaseEstimator):
     def _init_dataloader(self, x_trn, x_vld, y_trn, y_vld, img_train_trans=None, img_vld_trans=None):    
         # initialize dataset and dataloader
         if self.balanced_sampling:
-            
             dat_trn = Transformer2ndOrderBalancedTrainingDataset(
                 x_trn, y_trn,
                 self.src_modalities,
