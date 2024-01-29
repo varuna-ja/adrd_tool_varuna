@@ -56,7 +56,7 @@ class ADRDModel(BaseEstimator):
     The ADRDModel encapsulates the core pipeline of the ADRD framework, 
     permitting users to train and validate with the provided data. Designed for 
     user-friendly operation, the ADRDModel is derived from 
-    sklearn.base.BaseEstimator, ensuring compliance with the well-established 
+    ``sklearn.base.BaseEstimator``, ensuring compliance with the well-established 
     API design conventions of scikit-learn.
     """    
     def __init__(self,
