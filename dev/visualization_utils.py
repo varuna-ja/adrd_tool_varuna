@@ -116,7 +116,7 @@ for cohort in os.listdir(other_path):
         other_3d_mris.add(mri)
 
 #%%
-other_3d_mris = None
+# other_3d_mris = None
 
 # %%
 from matplotlib import rc, rcParams
