@@ -573,7 +573,7 @@ if __name__ == '__main__':
 
     #%%
     # Generate prediction for a single case
-    # replace this with a list of dictionary of input features
+    # replace this with a dictionary of input features
     test_case = {'his_NACCREAS': 0.0, 'his_NACCREFR': 2.0, 'his_SEX': 0, 'his_HISPANIC': 1, 'his_HISPOR': 1.0, 'his_RACE': 0, 'his_RACESEC': 3.0, 'his_PRIMLANG': 0.0, 'his_MARISTAT': 2.0, 'his_LIVSIT': 0.0, 'his_INDEPEND': 0.0, 'his_RESIDENC': 0.0, 'his_HANDED': 1.0, 'his_NACCNIHR': 5, 'his_NACCFAM': 1.0, 'his_NACCMOM': 0.0, 'his_NACCDAD': 1.0, 'his_NACCFADM': 0.0, 'his_NACCAM': 0.0, 'his_NACCFFTD': 0.0, 'his_NACCFM': 0.0, 'his_NACCOM': 0.0, 'his_TOBAC30': 0.0, 'his_TOBAC100': 1.0, 'his_CVHATT': 0.0, 'his_CVAFIB': 0.0, 'his_CVANGIO': 0.0, 'his_CVBYPASS': 0.0, 'his_CVPACE': 0.0} # example case
     scores, scores_proba, y_pred = generate_predictions_for_case(test_case)
 
