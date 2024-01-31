@@ -51,8 +51,8 @@ radiologist_features = ['ID', 'cdr_CDRGLOB', 'his_NACCAGE', 'his_SEX', 'his_RACE
 basedir=".."
 
 
-fname = 'nacc_test_with_np_cli'
-# fname = 'clinician_review_cases_test'
+# fname = 'nacc_test_with_np_cli'
+fname = 'clinician_review_cases_test'
 save_path = f'{basedir}/model_predictions_after_corr_stripped/'
 dat_file = f'{basedir}/data/train_vld_test_split_updated/{fname}.csv'
 cnf_file = f'{basedir}/dev/data/toml_files/default_conf_new.toml'
@@ -81,10 +81,6 @@ if 'fhs' in fname.lower():
     print(len(dat_file[~dat_file['ID'].isna()]))
     dat_file['ID'] = 'FHS_' + dat_file['ID']
     print(dat_file['ID'])
-    
-        
-# tst_filter_transform = FilterImages(dat_type='tst')
-tst_filter_transform = None
 
 if not os.path.exists(save_path):
     os.makedirs(save_path)
@@ -120,7 +116,7 @@ for cohort in os.listdir(other_path):
         other_3d_mris.add(mri)
 
 #%%
-# other_3d_mris = None
+other_3d_mris = None
 
 # %%
 from matplotlib import rc, rcParams
@@ -456,7 +452,7 @@ def generate_performance_report(dat_tst, y_pred, scores_proba):
         met[k] = metrics
         met[k].pop('Confusion Matrix')
 
-    save_performance_report(met, save_path + fname + '.pdf')
+    save_performance_report(met, save_path + fname + '_performance_report.pdf')
     
 def save_multilabel_confusion_matrix_roc_pr(dat_tst, y_pred, scores_proba, labels):
     y_true_ = [{k:int(v) if v is not None else np.NaN for k,v in entry.items()} for entry in dat_tst.labels]
@@ -472,7 +468,7 @@ def save_multilabel_confusion_matrix_roc_pr(dat_tst, y_pred, scores_proba, label
     generate_roc(y_true_, scores_proba_, labels, figname=f'{fname}_ROC')
     generate_pr(y_true_, scores_proba_, labels, figname=f'{fname}_PR')
 
-def generate_predictions_for_data_file(dat_file, labels):
+def generate_predictions_for_data_file(dat_file, labels, tst_filter_transform=None):
     # initialize datasets
     seed = 0
     print('Done.\nLoading testing dataset ...')
@@ -564,12 +560,15 @@ class FilterImages:
         
 #%%
 if __name__ == '__main__':
+    if img_mode in [0,2]:
+        tst_filter_transform = FilterImages(dat_type='tst')
+    else:
+        tst_filter_transform = None
     # Generate predictions for a test case file
-    
     # give labels list for generating micro, macro and weighted average curves
     labels = ['NC', 'MCI', 'DE']
     # labels =['AD', 'LBD', 'VD', 'PRD', 'FTD', 'NPH', 'SEF', 'PSY', 'TBI', 'ODE']
-    generate_predictions_for_data_file(dat_file, labels)
+    generate_predictions_for_data_file(dat_file, labels, tst_filter_transform)
 
     #%%
     # Generate prediction for a single case
