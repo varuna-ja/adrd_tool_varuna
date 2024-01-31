@@ -15,62 +15,6 @@ import nibabel as nib
 import json
 #%%
 
-# def get_train_split(df, random_state, labels=3):
-#     if labels == 3:
-#         nc = df[df['NC'] == 1][:int(0.6 * len(df[df['NC'] == 1]))]
-#         mci = df[df['MCI'] == 1][:int(0.6 * len(df[df['MCI'] == 1]))]
-#         de = df[df['DE'] == 1][:int(0.6 * len(df[df['DE'] == 1]))]
-#         df_train = pd.concat([nc, mci, de], ignore_index=True)
-#     else:
-#         nc = df[df['NC'] == 1][:int(0.6 * len(df[df['NC'] == 1]))]
-#         mci = df[df['MCI'] == 1][:int(0.6 * len(df[df['MCI'] == 1]))]
-#         ad = df[df['AD'] == 1][:int(0.6 * len(df[df['AD'] == 1]))]
-#         lbd = df[df['LBD'] == 1][:int(0.65 * len(df[df['LBD'] == 1]))]
-#         # vd = df[df['VD'] == 1][:int(0.2 * len(df[df['VD'] == 1]))]
-#         prion = df[df['PRD'] == 1]
-#         ftd = df[df['FTD'] == 1][:int(0.6 * len(df[df['FTD'] == 1]))]
-#         nph = df[df['NPH'] == 1][:int(0.6 * len(df[df['NPH'] == 1]))]
-#         sef = df[df['SEF'] == 1][:int(0.6 * len(df[df['SEF'] == 1]))]
-#         psy = df[df['PSY'] == 1][:int(0.2 * len(df[df['PSY'] == 1]))]
-#         tbi = df[df['TBI'] == 1][:int(0.6 * len(df[df['TBI'] == 1]))]
-#         oc = df[df['ODE'] == 1][:int(0.25 * len(df[df['ODE'] == 1]))]
-
-#         df_train = pd.concat([nc, mci, ad, lbd, prion, ftd, nph, sef, psy, tbi, oc], ignore_index=True)
-#     df_train = df_train.sample(frac=1, random_state=random_state).reset_index(drop=True)
-#     df_train.drop_duplicates(inplace=True)
-#     return df_train
-
-# def get_vld_split(df, random_state, df_train, labels=3):
-#     if labels == 3:
-#         nc = df[df['NC'] == 1][int(0.6 * len(df[df['NC'] == 1])):int(0.8 * len(df[df['NC'] == 1]))]
-#         mci = df[df['MCI'] == 1][int(0.6 * len(df[df['MCI'] == 1])):int(0.8 * len(df[df['MCI'] == 1]))]
-#         de = df[df['DE'] == 1][int(0.6 * len(df[df['DE'] == 1])):int(0.8 * len(df[df['DE'] == 1]))]
-#         df_vld = pd.concat([nc, mci, de], ignore_index=True)
-#     else:
-#         nc = df[df['NC'] == 1][int(0.6 * len(df[df['NC'] == 1])):int(0.8 * len(df[df['NC'] == 1]))]
-#         mci = df[df['MCI'] == 1][int(0.6 * len(df[df['MCI'] == 1])):int(0.8 * len(df[df['MCI'] == 1]))]
-#         ad = df[df['AD'] == 1][int(0.6 * len(df[df['AD'] == 1])):int(0.8 * len(df[df['AD'] == 1]))]
-#         lbd = df[df['LBD'] == 1][int(0.65 * len(df[df['LBD'] == 1])):int(0.8 * len(df[df['LBD'] == 1]))]
-#         vd = df[df['VD'] == 1][:int(0.3 * len(df[df['VD'] == 1]))]
-#         # prion = df[df['PRD'] == 1][int(0.6 * len(df[df['PRD'] == 1])):int(0.8 * len(df[df['PRD'] == 1]))]
-#         ftd = df[df['FTD'] == 1][int(0.6 * len(df[df['FTD'] == 1])):int(0.8 * len(df[df['FTD'] == 1]))]
-#         nph = df[df['NPH'] == 1][int(0.6 * len(df[df['NPH'] == 1])):int(0.8 * len(df[df['NPH'] == 1]))]
-#         sef = df[df['SEF'] == 1][int(0.6 * len(df[df['SEF'] == 1])):int(0.8 * len(df[df['SEF'] == 1]))]
-#         # psy = df[df['PSY'] == 1][int(0.6 * len(df[df['PSY'] == 1])):int(0.65 * len(df[df['PSY'] == 1]))]
-#         tbi = df[df['TBI'] == 1][int(0.6 * len(df[df['TBI'] == 1])):int(0.65 * len(df[df['TBI'] == 1]))]
-#         oc = df[df['ODE'] == 1][int(0.25 * len(df[df['ODE'] == 1])):int(0.8 * len(df[df['ODE'] == 1]))]
-
-#         df_vld = pd.concat([nc, mci, ad, lbd, vd, ftd, nph, sef, tbi, oc], ignore_index=True)
-#     df_vld = df_vld[~df_vld['ID'].isin(list(df_train['ID']))]
-#     df_vld = df_vld.sample(frac=1, random_state=random_state).reset_index(drop=True)
-#     df_vld.drop_duplicates(inplace=True)
-#     return df_vld
-
-# def get_tst_split(df, random_state, df_train, df_vld):
-#     df_tst = df[~df['ID'].isin(list(df_train['ID'])) & ~df['ID'].isin(list(df_vld['ID']))]
-#     df_tst = df_tst.sample(frac=1, random_state=random_state).reset_index(drop=True)
-#     df_tst.drop_duplicates(inplace=True)
-#     return df_tst
 
 def get_train_split(df, random_state, labels):
     if labels == 3:

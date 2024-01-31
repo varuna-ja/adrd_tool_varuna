@@ -49,4 +49,4 @@ emb_path="/data_1/dlteif/SwinUNETR_MRI_stripped_emb/"
 python dev/train.py --data_path $data_path --train_path $train_path --vld_path $vld_path --test_path $test_path --cnf_file $cnf_file --ckpt_path $ckpt_path \
                     --d_model 256 --nhead 1 --num_epochs 256 --batch_size 128 --lr 5e-4 --gamma 2 --img_mode $img_mode --img_net $img_net --img_size 128 \
                     --patch_size 16 --ckpt_path $ckpt_path --mri_type $mri_type --train_imgnet --cnf_file ${cnf_file} --train_path ${train_path} \
-                    --vld_path ${vld_path} --data_path ${data_path} --fusion_stage middle --imgnet_layers 4 --weight_decay 0.01 --emb_path $emb_path --ranking_loss --save_intermediate_ckpts --load_from_ckpt #--wandb #--balanced_sampling
+                    --vld_path ${vld_path} --data_path ${data_path} --fusion_stage middle --imgnet_layers 4 --weight_decay 0.01 --emb_path $emb_path --ranking_loss --save_intermediate_ckpts #--load_from_ckpt #--wandb #--balanced_sampling

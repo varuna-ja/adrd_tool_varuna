@@ -35,12 +35,12 @@ label_names = ['NC', 'MCI', 'DE', 'AD', 'LBD', 'VD', 'PRD', 'FTD', 'NPH', 'SEF',
 # other_path = '/projectnb/ivc-ml/dlteif/Raw_MRIs'
 
 # uncomment this to use on echo
-nacc_mri_info = "../clinician_review/mri_3d.json"
+# nacc_mri_info = "../clinician_review/mri_3d.json"
 other_path = '/SeaExpCIFS/Raw_MRIs/ALL_nii'
 
 class CSVDataset:
 
-    def __init__(self, dat_file, cnf_file, mode=0, img_mode=0, dat_trn=None, mri_type='ALL', other_3d_mris=None, arch=None, emb_path='/data_1/dlteif/SwinUNETR_MRI_stripped_emb/', transforms=None, stripped=True):
+    def __init__(self, dat_file, cnf_file, mode=0, img_mode=0, dat_trn=None, mri_type='ALL', other_3d_mris=None, arch=None, emb_path='/data_1/dlteif/SwinUNETR_MRI_stripped_emb/', nacc_mri_info = "./clinician_review/mri_3d.json", transforms=None, stripped=True):
         ''' ... '''
         # load data csv
         if isinstance(dat_file, str):
@@ -524,8 +524,6 @@ class CSVDataset:
         df.reset_index(drop=True, inplace=True)
         
 
-        # df = df[~df['img_MRI_1'].isna()]
-
         # some of the values need to be mapped to the desirable domain
         for name in features + labels:
             if name in value_mapping:
@@ -544,7 +542,6 @@ class CSVDataset:
         df.replace({np.nan: None}, inplace=True)
 
         
-        
         # done for df
         self.df = df
 
@@ -555,9 +552,7 @@ class CSVDataset:
             vals = df.iloc[i].to_list()
             self.features.append(dict(zip(keys[:len(features)], vals[:len(features)])))
             self.labels.append(dict(zip(keys[len(features):], vals[len(features):])))
-            # self.features[-1]['img_mode'] = img_mode
         
-        # print(self.features[0])
         # test: remove if None
         for i in range(len(self.features)):
             for k, v in list(self.features[i].items()):

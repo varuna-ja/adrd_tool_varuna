@@ -45,28 +45,20 @@ from monai.transforms import (
     Resized,
 )
 
-# %%
+#%%
+# define paths and variables
 radiologist_features = ['ID', 'cdr_CDRGLOB', 'his_NACCAGE', 'his_SEX', 'his_RACE', 'his_RACESEC', 'his_RACETER', 'his_EDUC', 'mri_zip', 'NC', 'MCI', 'DE', 'AD', 'LBD', 'VD', 'PRD', 'FTD', 'NPH', 'SEF', 'PSY', 'TBI', 'ODE']
-mri_fea = ['ID', 'cdr_CDRGLOB', 'mri_zip', 'NC', 'MCI', 'DE', 'AD', 'LBD', 'VD', 'PRD', 'FTD', 'NPH', 'SEF', 'PSY', 'TBI', 'ODE']
-# basedir="."
 basedir=".."
 
 
 fname = 'nacc_test_with_np_cli'
-# fname = 'nacc_neuropath_test'
 # fname = 'clinician_review_cases_test'
-# fname = 'radiologist_review_cases_test'
-# fname = 'adni_revised_labels'
-# fname = 'adni_neuropath'
-# fname = 'fhs_converted_6months_cleaned'
 save_path = f'{basedir}/model_predictions_after_corr_stripped/'
 dat_file = f'{basedir}/data/train_vld_test_split_updated/{fname}.csv'
 cnf_file = f'{basedir}/dev/data/toml_files/default_conf_new.toml'
-# ckpt_path = '/home/skowshik/ADRD_repo/pipeline_v1_main/adrd_tool/dev/ckpt/final/new_embeddings_current_best_model_correction_bs128.pt'
 ckpt_path = '/data_1/skowshik/ckpts_backbone_swinunet/new_embeddings_current_best_model_correction.pt'
 emb_path = '/data_1/dlteif/SwinUNETR_MRI_stripped_emb/'
-# emb_path = '/data_1/dlteif/SwinUNETR_MRI_stripped_emb_ADNI/'
-# emb_path = '/data_1/ahangar/FHS_MRI_Embeddings_NEW/'
+nacc_mri_info = "../clinician_review/mri_3d.json"
 
 dat_file = pd.read_csv(dat_file)
 radiologist_features = [fea for fea in radiologist_features if fea in dat_file.columns]
@@ -74,9 +66,10 @@ if 'radiologist' in fname:
     dat_file = dat_file[radiologist_features]
 print(dat_file)
 
-# img_net="DenseNetEMB"
-# img_mode=1
-# mri_type='SEQ'
+# uncommment this to run without image embeddings
+# img_net="NonImg"
+# img_mode=-1
+# mri_type="ALL"
 
 img_net="SwinUNETREMB"
 img_mode=1
@@ -88,9 +81,22 @@ if 'fhs' in fname.lower():
     print(len(dat_file[~dat_file['ID'].isna()]))
     dat_file['ID'] = 'FHS_' + dat_file['ID']
     print(dat_file['ID'])
+    
+        
+# tst_filter_transform = FilterImages(dat_type='tst')
+tst_filter_transform = None
+
+if not os.path.exists(save_path):
+    os.makedirs(save_path)
+    
+# load saved Transformer
+device = 'cuda:2'
+img_dict = {'img_net': 'SwinUNETREMB', 'img_size': 128, 'patch_size': 16, 'imgnet_ckpt': ckpt_path, 'imgnet_layers': 4, 'train_imgnet': False}
+mdl = ADRDModel.from_ckpt(ckpt_path, device=device, img_dict=img_dict)
+print("loaded")
 
 #%%
-# Select only 3D MRIs
+# Filter for 3D MRIs
 other_path = '/SeaExpCIFS/Raw_MRIs/ALL_nii'
 other_3d_mris = set()
 for cohort in os.listdir(other_path):
@@ -115,140 +121,6 @@ for cohort in os.listdir(other_path):
 
 #%%
 # other_3d_mris = None
-
-# %%
-
-if not os.path.exists(save_path):
-    os.makedirs(save_path)
-
-
-# initialize datasets
-seed = 0
-print('Done.\nLoading testing dataset ...')
-dat_tst = CSVDataset(dat_file=dat_file, cnf_file=cnf_file, mode=0, img_mode=img_mode, mri_type=mri_type, other_3d_mris=other_3d_mris, emb_path=emb_path, stripped=True)
-
-print('Done.')
-
-# %%
-# load saved Transformer
-device = 'cuda:2'
-img_dict = {'img_net': 'SwinUNETREMB', 'img_size': 128, 'patch_size': 16, 'imgnet_ckpt': ckpt_path, 'imgnet_layers': 4, 'train_imgnet': False}
-mdl = ADRDModel.from_ckpt(ckpt_path, device=device, img_dict=img_dict)
-print("loaded")
-
-#%%
-def minmax_normalized(x, keys=["image"]):
-    for key in keys:
-        eps = torch.finfo(torch.float32).eps
-        x[key] = torch.nn.functional.relu((x[key] - x[key].min()) / (x[key].max() - x[key].min() + eps))
-    return x
-
-flip_and_jitter = monai.transforms.Compose([
-        monai.transforms.RandAxisFlipd(keys=["image"], prob=0.5),
-        transforms.RandomApply(
-            [
-                monai.transforms.RandAdjustContrastd(keys=["image"], gamma=(-0.3,0.3)), # Random Gamma => randomly change contrast by raising the values to the power log_gamma 
-                monai.transforms.RandBiasFieldd(keys=["image"]), # Random Bias Field artifact
-                monai.transforms.RandGaussianNoised(keys=["image"]),
-
-            ],
-            p=0.4
-        ),
-    ])
-
-# Custom transformation to filter problematic images
-class FilterImages:
-    def __init__(self, dat_type):
-        # self.problematic_indices = []
-        self.train_transforms = Compose(
-            [
-                LoadImaged(keys=["image"]),
-                EnsureChannelFirstd(keys=["image"]),
-                Spacingd(keys=["image"], pixdim=(1.0, 1.0, 1.0), mode=("bilinear")),
-                CropForegroundd(keys=["image"], source_key="image"),
-                monai.transforms.RandScaleCropd(keys=["image"], roi_scale=0.7, max_roi_scale=1, random_size=True, random_center=True),
-                monai.transforms.ResizeWithPadOrCropd(keys=["image"], spatial_size=128),
-                flip_and_jitter,
-                monai.transforms.RandGaussianSmoothd(keys=["image"], prob=0.5),
-                minmax_normalized,
-            ]            
-        )
-        
-        self.vld_transforms = Compose(
-            [
-                LoadImaged(keys=["image"]),
-                EnsureChannelFirstd(keys=["image"]),
-                Spacingd(keys=["image"], pixdim=(1.0, 1.0, 1.0), mode=("bilinear")),
-                CropForegroundd(keys=["image"], source_key="image"),
-                # CenterSpatialCropd(keys=["image"], roi_size=(args.img_size,)*3),
-                Resized(keys=["image"], spatial_size=(128*2,)*3),
-                monai.transforms.ResizeWithPadOrCropd(keys=["image"], spatial_size=128),
-                minmax_normalized,
-            ]
-        )
-        
-        if dat_type == 'trn':
-            self.transforms = self.train_transforms
-        else:
-            self.transforms = self.vld_transforms
-
-    def __call__(self, data):
-        image_data = data["image"]
-        try:
-            # check = nib.load(image_data).get_fdata()
-            # print(len(check.shape))
-            # if len(check.shape) > 3:
-            #     return None
-            
-            return self.transforms(data)
-        except Exception as e:
-            print(f"Error processing image: {image_data}{e}")
-            return None
-        
-# tst_filter_transform = FilterImages(dat_type='tst')
-tst_filter_transform = None
-    
-#%%
-
-# loading testing predictions
-scores, scores_proba, y_pred = mdl.predict(x=dat_tst.features, _batch_size=64, img_transform=tst_filter_transform)
-
-#%%
-def save_predictions(dat_tst, scores_proba, scores, save_path=None, filename=None, if_save=True):
-    y_true = [{k:int(v) if v is not None else np.NaN for k,v in entry.items()} for entry in dat_tst.labels]
-    mask = [{k:1 if v is not None else 0 for k,v in entry.items()} for entry in dat_tst.labels]
-
-    y_true_ = {f'{k}_label': [smp[k] for smp in y_true] for k in y_true[0] if k in dat_file.columns}
-    scores_proba_ = {f'{k}_prob': [round(smp[k], 3) if isinstance(y_true[i][k], int) else np.NaN for i, smp in enumerate(scores_proba)] for k in scores_proba[0] if k in dat_file.columns}
-    scores_ = {f'{k}_logit': [round(smp[k], 3) if isinstance(y_true[i][k], int) else np.NaN for i, smp in enumerate(scores)] for k in scores[0] if k in dat_file.columns}
-    ids = dat_file['ID']
-
-    y_true_df = pd.DataFrame(y_true_)
-    scores_df = pd.DataFrame(scores_)
-    scores_proba_df = pd.DataFrame(scores_proba_)
-    if 'cdr_CDRGLOB' in dat_file:
-        cdr = dat_file['cdr_CDRGLOB']
-        cdr_df = pd.DataFrame(cdr)
-    id_df = pd.DataFrame(ids)
-    if 'fhs' in fname:
-        fhsid = ids = dat_file[['id', 'idtype', 'framid']]
-        fhsid_df = pd.DataFrame(fhsid)
-        if 'cdr_CDRGLOB' in dat_file:
-            df = pd.concat([fhsid_df, id_df, y_true_df, scores_proba_df, cdr_df], axis=1)
-        else:
-            df = pd.concat([fhsid_df, id_df, y_true_df, scores_proba_df], axis=1)
-    else:
-        if 'cdr_CDRGLOB' in dat_file:
-            df = pd.concat([id_df, y_true_df, scores_proba_df, cdr_df], axis=1)
-        else:
-            df = pd.concat([id_df, y_true_df, scores_proba_df], axis=1)
-        
-    if if_save:
-        df.to_csv(save_path + filename, index=False)
-    return df
-
-
-save_predictions(dat_tst, scores_proba, scores, save_path, f'{fname}_stripped_prob_bs128.csv', if_save=True)
 
 # %%
 from matplotlib import rc, rcParams
@@ -276,7 +148,6 @@ def plot_classification_report(report, filepath, format):
     cls_report_plot.figure.savefig(filepath, format=format, dpi=300, bbox_inches='tight')
 
 # Confusion Matrix
-
 def confusion_matrix_2_2(y_true, y_pred, labels=[0,1]):
     return confusion_matrix(y_true, y_pred, labels=labels)
 
@@ -314,7 +185,6 @@ def plot_multilabel_cm(y_true, y_pred, features, filepath, format, class_names=[
     fig.figure.savefig(filepath, format=format, dpi=300, bbox_inches='tight')
 
 # AUC ROC
-
 def roc_auc_scores(y_true, y_pred, features):
     # n_classes = y_true.shape[1]
 
@@ -420,7 +290,6 @@ def generate_roc(y_true, y_pred, features, figname='Average_ROC_curves'):
     plt.savefig(save_path + f"{figname}.pdf", format='pdf', dpi=300, bbox_inches='tight')
 
 # P-R curve
-
 def precision_recall(y_true, y_pred, features):
     # Compute the precision-recall curve and average precision for each class
     # n_classes = y_true.shape[1]
@@ -534,122 +403,206 @@ def save_performance_report(met, filepath):
     # plt.show()
     report_plot.figure.savefig(filepath, format='pdf', dpi=300, bbox_inches='tight')
 
-
-# %%
-# Generate performance report
-# list-of-dict to dict-of-list
-y_true = [{k:int(v) if v is not None else 0 for k,v in entry.items()} for entry in dat_tst.labels]
-mask = [{k:1 if v is not None else 0 for k,v in entry.items()} for entry in dat_tst.labels]
-
-y_true_dict = {k: [smp[k] for smp in y_true] for k in y_true[0]}
-y_pred_dict = {k: [smp[k] for smp in y_pred] for k in y_pred[0]}
-scores_proba_dict = {k: [smp[k] for smp in scores_proba] for k in scores_proba[0]}
-mask_dict = {k: [smp[k] for smp in mask] for k in mask[0]}
-
-met = {}
-for k in dat_tst.label_modalities:
-    print('Performance metrics of {}'.format(k))
-    metrics = get_metrics(np.array(y_true_dict[k]), np.array(y_pred_dict[k]), np.array(scores_proba_dict[k]), np.array(mask_dict[k]))
-    print_metrics(metrics)
-
-    met[k] = metrics
-    met[k].pop('Confusion Matrix')
-
-save_performance_report(met, save_path + fname + '.pdf')
-
-#%%
-# Generate classification report and multilabel confusion matrix
-
-y_true_ = [{k:int(v) if v is not None else np.NaN for k,v in entry.items()} for entry in dat_tst.labels]
-y_pred_ = [{k:int(smp[k]) for k in smp.keys() if (k in y_true_[i] and isinstance(y_true_[i][k], int))} for i, smp in enumerate(y_pred)]
-scores_proba_ = [{k:smp[k] for k in smp.keys() if (k in y_true_[i] and isinstance(y_true_[i][k], int))} for i, smp in enumerate(scores_proba)]
-
-y_true_ = np.array([list(y_true_[k].values()) for k in range(len(y_true_))])
-y_pred_ = np.array([list(y_pred_[k].values()) for k in range(len(y_pred_))])
-scores_proba_ = np.array([list(scores_proba_[k].values()) for k in range(len(scores_proba_))])
-
-classification_report_ = get_classification_report(y_true_, y_pred_, list(dat_tst.label_modalities.keys()))
-plot_classification_report(classification_report_, filepath=save_path + "classification_report.pdf", format='pdf')
-plot_multilabel_cm(y_true_, y_pred_, list(dat_tst.label_modalities.keys()), filepath=save_path + "multilabel_confusion_matrix.pdf", format='pdf')
-
-
-#%%
-# Generate AUC-ROC curves and AUC-PR curves from saved predictions 
-import pandas as pd
-import numpy as np
-labels = ['NC', 'MCI', 'DE'] 
-basedir = '../model_predictions_after_corr_stripped'
-nacc = pd.read_csv(f'{basedir}/nacc_test_with_np_cli_stripped_prob_bs128.csv')
-adni = pd.read_csv(f'{basedir}/adni_revised_labels_stripped_prob_bs128.csv')
-fhs = pd.read_csv(f'{basedir}/fhs_converted_6months_cleaned_stripped_prob_bs128.csv')
-
-df = pd.concat([nacc, adni, fhs], axis=0).reset_index()
-
-y_true_ =  np.array(df[[f'{lab}_label' for lab in labels]])
-scores_proba_ = np.array(df[[f'{lab}_prob' for lab in labels]])
-print(scores_proba_.shape)
-
-generate_roc(y_true_, scores_proba_, labels, figname=f'fig2g')
-generate_pr(y_true_, scores_proba_, labels, figname=f'fig2h')
-
-labels_de =['AD', 'LBD', 'VD', 'PRD', 'FTD', 'NPH', 'SEF', 'PSY', 'TBI', 'ODE']
-y_true_ =  np.array(nacc[[f'{lab}_label' for lab in labels_de]])
-scores_proba_ =  np.array(nacc[[f'{lab}_prob' for lab in labels_de]])
-print(scores_proba_.shape)
-
-generate_roc(y_true_, scores_proba_, labels_de, figname=f'fig4k')
-generate_pr(y_true_, scores_proba_, labels_de, figname=f'fig4l')
-
-
-# %%
-# Generate predictions for different missingness patterns
-from itertools import product
-import pandas as pd
-import numpy as np
-basedir=".."
-df = pd.read_csv(f'{basedir}/data/train_vld_test_split_updated/nacc_test_with_np_cli.csv')
-groups = np.array(['updrs', 'npiq', 'gds', 'faq', 'bat', 'img_MRI'])
-groups_col = np.array([f'mask_{grp}' for grp in groups])
-
-# load saved Transformer
-device = 'cuda:0'
-img_dict = {'img_net': 'SwinUNETREMB', 'img_size': 128, 'patch_size': 16, 'imgnet_ckpt': ckpt_path, 'imgnet_layers': 4, 'train_imgnet': False}
-mdl = ADRDModel.from_ckpt(ckpt_path, device=device, img_dict=img_dict)
-print("loaded")
-
-combinations = list(product([0, 1], repeat=len(groups)))
-print(combinations)
-print(len(df.columns))
-
-#%%
-combination_dfs = []
-# Print the combinations
-for i, combo in tqdm(enumerate(combinations)):
-    fea_mask = groups[np.where(np.array(combo) == 1)]
-    sub_df = df.drop([col for col in df.columns if any(col.startswith(grp) for grp in fea_mask)], axis=1)
-    
-    print(combo)
-    print("columns: ", len(sub_df.columns))
-    # break
-
-    if 'img_MRI' in fea_mask:
-        img_mode = -1
-    else:
-        img_mode = 1
-        
-    
-    dat_tst = CSVDataset(dat_file=sub_df, cnf_file=cnf_file, mode=0, img_mode=img_mode, mri_type=mri_type, other_3d_mris=None, emb_path=emb_path, stripped=True)
-    
+# Save model generated probabilities
+def save_predictions(dat_tst, scores_proba, scores, save_path=None, filename=None, if_save=True):
     y_true = [{k:int(v) if v is not None else np.NaN for k,v in entry.items()} for entry in dat_tst.labels]
     mask = [{k:1 if v is not None else 0 for k,v in entry.items()} for entry in dat_tst.labels]
-    
-    scores, scores_proba, y_pred = mdl.predict(x=dat_tst.features, _batch_size=64, img_transform=None)
-    preds = save_predictions(dat_tst, y_true, scores_proba, scores, if_save=False)
-    combo_df = pd.concat([preds, pd.DataFrame([combo] * len(preds), columns=groups_col)], axis=1)
-    # print(combo_df)
-    # break
-    combination_dfs.append(combo_df)
-    # break
 
-combined = pd.concat(combination_dfs, axis=0)
-combined.to_csv(save_path + 'fig_2c_combined.csv', index=False)
+    y_true_ = {f'{k}_label': [smp[k] for smp in y_true] for k in y_true[0] if k in dat_file.columns}
+    scores_proba_ = {f'{k}_prob': [round(smp[k], 3) if isinstance(y_true[i][k], int) else np.NaN for i, smp in enumerate(scores_proba)] for k in scores_proba[0] if k in dat_file.columns}
+    scores_ = {f'{k}_logit': [round(smp[k], 3) if isinstance(y_true[i][k], int) else np.NaN for i, smp in enumerate(scores)] for k in scores[0] if k in dat_file.columns}
+    ids = dat_file['ID']
+
+    y_true_df = pd.DataFrame(y_true_)
+    scores_df = pd.DataFrame(scores_)
+    scores_proba_df = pd.DataFrame(scores_proba_)
+    if 'cdr_CDRGLOB' in dat_file:
+        cdr = dat_file['cdr_CDRGLOB']
+        cdr_df = pd.DataFrame(cdr)
+    id_df = pd.DataFrame(ids)
+    if 'fhs' in fname:
+        fhsid = ids = dat_file[['id', 'idtype', 'framid']]
+        fhsid_df = pd.DataFrame(fhsid)
+        if 'cdr_CDRGLOB' in dat_file:
+            df = pd.concat([fhsid_df, id_df, y_true_df, scores_proba_df, cdr_df], axis=1)
+        else:
+            df = pd.concat([fhsid_df, id_df, y_true_df, scores_proba_df], axis=1)
+    else:
+        if 'cdr_CDRGLOB' in dat_file:
+            df = pd.concat([id_df, y_true_df, scores_proba_df, cdr_df], axis=1)
+        else:
+            df = pd.concat([id_df, y_true_df, scores_proba_df], axis=1)
+        
+    if if_save:
+        df.to_csv(save_path + filename, index=False)
+        
+    return df
+
+def generate_performance_report(dat_tst, y_pred, scores_proba):
+    y_true = [{k:int(v) if v is not None else 0 for k,v in entry.items()} for entry in dat_tst.labels]
+    mask = [{k:1 if v is not None else 0 for k,v in entry.items()} for entry in dat_tst.labels]
+
+    y_true_dict = {k: [smp[k] for smp in y_true] for k in y_true[0]}
+    y_pred_dict = {k: [smp[k] for smp in y_pred] for k in y_pred[0]}
+    scores_proba_dict = {k: [smp[k] for smp in scores_proba] for k in scores_proba[0]}
+    mask_dict = {k: [smp[k] for smp in mask] for k in mask[0]}
+
+    met = {}
+    for k in dat_tst.label_modalities:
+        print('Performance metrics of {}'.format(k))
+        metrics = get_metrics(np.array(y_true_dict[k]), np.array(y_pred_dict[k]), np.array(scores_proba_dict[k]), np.array(mask_dict[k]))
+        print_metrics(metrics)
+
+        met[k] = metrics
+        met[k].pop('Confusion Matrix')
+
+    save_performance_report(met, save_path + fname + '.pdf')
+    
+def save_multilabel_confusion_matrix_roc_pr(dat_tst, y_pred, scores_proba, labels):
+    y_true_ = [{k:int(v) if v is not None else np.NaN for k,v in entry.items()} for entry in dat_tst.labels]
+    y_pred_ = [{k:int(smp[k]) for k in smp.keys() if (k in y_true_[i] and isinstance(y_true_[i][k], int))} for i, smp in enumerate(y_pred)]
+    scores_proba_ = [{k:smp[k] for k in smp.keys() if (k in y_true_[i] and isinstance(y_true_[i][k], int))} for i, smp in enumerate(scores_proba)]
+    y_true_ = np.array([list(y_true_[k].values()) for k in range(len(y_true_))])
+    y_pred_ = np.array([list(y_pred_[k].values()) for k in range(len(y_pred_))])
+    scores_proba_ = np.array([list(scores_proba_[k].values()) for k in range(len(scores_proba_))])
+
+    classification_report_ = get_classification_report(y_true_, y_pred_, list(dat_tst.label_modalities.keys()))
+    plot_classification_report(classification_report_, filepath=save_path + fname + "_classification_report.pdf", format='pdf')
+    plot_multilabel_cm(y_true_, y_pred_, list(dat_tst.label_modalities.keys()), filepath=save_path + fname + f"_multilabel_confusion_matrix.pdf", format='pdf')
+    generate_roc(y_true_, scores_proba_, labels, figname=f'{fname}_ROC')
+    generate_pr(y_true_, scores_proba_, labels, figname=f'{fname}_PR')
+
+def generate_predictions_for_data_file(dat_file, labels):
+    # initialize datasets
+    seed = 0
+    print('Done.\nLoading testing dataset ...')
+    dat_tst = CSVDataset(dat_file=dat_file, cnf_file=cnf_file, mode=0, img_mode=img_mode, mri_type=mri_type, other_3d_mris=other_3d_mris, emb_path=emb_path, nacc_mri_info=nacc_mri_info, stripped=True)
+
+    print('Done.')
+    
+    # generate model predictions
+    print('Generating model predictions')
+    scores, scores_proba, y_pred = mdl.predict(x=dat_tst.features, _batch_size=64, img_transform=tst_filter_transform)
+    print('Done.')
+    
+    # save model predictions
+    print('Saving model predictions')
+    save_predictions(dat_tst, scores_proba, scores, save_path, f'{fname}_stripped_prob_bs128.csv', if_save=True)
+    print('Done.')
+    
+    # save performance report
+    print('Generating performance reports')
+    generate_performance_report(dat_tst, y_pred, scores_proba)
+    save_multilabel_confusion_matrix_roc_pr(dat_tst, y_pred, scores_proba, labels)
+    print('Done.')
+    
+def generate_predictions_for_case(case_dict):
+    return  mdl.predict(x=[test_case], _batch_size=1, img_transform=None)
+
+def minmax_normalized(x, keys=["image"]):
+    for key in keys:
+        eps = torch.finfo(torch.float32).eps
+        x[key] = torch.nn.functional.relu((x[key] - x[key].min()) / (x[key].max() - x[key].min() + eps))
+    return x
+
+flip_and_jitter = monai.transforms.Compose([
+        monai.transforms.RandAxisFlipd(keys=["image"], prob=0.5),
+        transforms.RandomApply(
+            [
+                monai.transforms.RandAdjustContrastd(keys=["image"], gamma=(-0.3,0.3)), # Random Gamma => randomly change contrast by raising the values to the power log_gamma 
+                monai.transforms.RandBiasFieldd(keys=["image"]), # Random Bias Field artifact
+                monai.transforms.RandGaussianNoised(keys=["image"]),
+
+            ],
+            p=0.4
+        ),
+    ])
+
+# Custom transformation to filter problematic images
+class FilterImages:
+    def __init__(self, dat_type):
+        # self.problematic_indices = []
+        self.train_transforms = Compose(
+            [
+                LoadImaged(keys=["image"]),
+                EnsureChannelFirstd(keys=["image"]),
+                Spacingd(keys=["image"], pixdim=(1.0, 1.0, 1.0), mode=("bilinear")),
+                CropForegroundd(keys=["image"], source_key="image"),
+                monai.transforms.RandScaleCropd(keys=["image"], roi_scale=0.7, max_roi_scale=1, random_size=True, random_center=True),
+                monai.transforms.ResizeWithPadOrCropd(keys=["image"], spatial_size=128),
+                flip_and_jitter,
+                monai.transforms.RandGaussianSmoothd(keys=["image"], prob=0.5),
+                minmax_normalized,
+            ]            
+        )
+        
+        self.vld_transforms = Compose(
+            [
+                LoadImaged(keys=["image"]),
+                EnsureChannelFirstd(keys=["image"]),
+                Spacingd(keys=["image"], pixdim=(1.0, 1.0, 1.0), mode=("bilinear")),
+                CropForegroundd(keys=["image"], source_key="image"),
+                # CenterSpatialCropd(keys=["image"], roi_size=(args.img_size,)*3),
+                Resized(keys=["image"], spatial_size=(128*2,)*3),
+                monai.transforms.ResizeWithPadOrCropd(keys=["image"], spatial_size=128),
+                minmax_normalized,
+            ]
+        )
+        
+        if dat_type == 'trn':
+            self.transforms = self.train_transforms
+        else:
+            self.transforms = self.vld_transforms
+
+    def __call__(self, data):
+        image_data = data["image"]
+        try:
+            return self.transforms(data)
+        except Exception as e:
+            print(f"Error processing image: {image_data}{e}")
+            return None
+        
+#%%
+if __name__ == '__main__':
+    # Generate predictions for a test case file
+    
+    # give labels list for generating micro, macro and weighted average curves
+    labels = ['NC', 'MCI', 'DE']
+    # labels =['AD', 'LBD', 'VD', 'PRD', 'FTD', 'NPH', 'SEF', 'PSY', 'TBI', 'ODE']
+    generate_predictions_for_data_file(dat_file, labels)
+
+    #%%
+    # Generate prediction for a single case
+    # replace this with a list of dictionary of input features
+    test_case = {'his_NACCREAS': 0.0, 'his_NACCREFR': 2.0, 'his_SEX': 0, 'his_HISPANIC': 1, 'his_HISPOR': 1.0, 'his_RACE': 0, 'his_RACESEC': 3.0, 'his_PRIMLANG': 0.0, 'his_MARISTAT': 2.0, 'his_LIVSIT': 0.0, 'his_INDEPEND': 0.0, 'his_RESIDENC': 0.0, 'his_HANDED': 1.0, 'his_NACCNIHR': 5, 'his_NACCFAM': 1.0, 'his_NACCMOM': 0.0, 'his_NACCDAD': 1.0, 'his_NACCFADM': 0.0, 'his_NACCAM': 0.0, 'his_NACCFFTD': 0.0, 'his_NACCFM': 0.0, 'his_NACCOM': 0.0, 'his_TOBAC30': 0.0, 'his_TOBAC100': 1.0, 'his_CVHATT': 0.0, 'his_CVAFIB': 0.0, 'his_CVANGIO': 0.0, 'his_CVBYPASS': 0.0, 'his_CVPACE': 0.0} # example case
+    scores, scores_proba, y_pred = generate_predictions_for_case(test_case)
+
+    #%%
+    # Uncomment this section to generate AUC-ROC curves and AUC-PR curves from saved predictions 
+
+    # import pandas as pd
+    # import numpy as np
+    # labels = ['NC', 'MCI', 'DE'] 
+    # basedir = '../model_predictions_after_corr_stripped'
+    # nacc = pd.read_csv(f'{basedir}/nacc_test_with_np_cli_stripped_prob_bs128.csv')
+    # adni = pd.read_csv(f'{basedir}/adni_revised_labels_stripped_prob_bs128.csv')
+    # fhs = pd.read_csv(f'{basedir}/fhs_converted_6months_cleaned_stripped_prob_bs128.csv')
+
+    # df = pd.concat([nacc, adni, fhs], axis=0).reset_index()
+
+    # y_true_ =  np.array(df[[f'{lab}_label' for lab in labels]])
+    # scores_proba_ = np.array(df[[f'{lab}_prob' for lab in labels]])
+    # print(scores_proba_.shape)
+
+    # generate_roc(y_true_, scores_proba_, labels, figname=f'fig2g')
+    # generate_pr(y_true_, scores_proba_, labels, figname=f'fig2h')
+
+    # labels_de =['AD', 'LBD', 'VD', 'PRD', 'FTD', 'NPH', 'SEF', 'PSY', 'TBI', 'ODE']
+    # y_true_ =  np.array(nacc[[f'{lab}_label' for lab in labels_de]])
+    # scores_proba_ =  np.array(nacc[[f'{lab}_prob' for lab in labels_de]])
+    # print(scores_proba_.shape)
+
+    # generate_roc(y_true_, scores_proba_, labels_de, figname=f'fig4k')
+    # generate_pr(y_true_, scores_proba_, labels_de, figname=f'fig4l')
+
+
