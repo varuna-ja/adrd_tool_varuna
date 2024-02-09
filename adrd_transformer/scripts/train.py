@@ -235,17 +235,17 @@ mdl = ADRDModel(
     weight_decay = args.weight_decay,
     gamma = args.gamma,
     criterion = 'AUC (ROC)',
-    # device = 'cpu',
-    cuda_devices = [1,2],
-    img_net = args.img_net,
-    imgnet_layers = args.imgnet_layers,
-    img_size = args.img_size,
+    device = 'cpu',
+    # cuda_devices = [1,2],
+    # img_net = args.img_net,
+    # imgnet_layers = args.imgnet_layers,
+    # img_size = args.img_size,
     fusion_stage= args.fusion_stage,
-    imgnet_ckpt = args.imgnet_ckpt,
+    # imgnet_ckpt = args.imgnet_ckpt,
     patch_size = args.patch_size,
     ckpt_path = ckpt_path,
-    train_imgnet = args.train_imgnet,
-    load_from_ckpt = args.load_from_ckpt,
+    # train_imgnet = args.train_imgnet,
+    # load_from_ckpt = args.load_from_ckpt,
     save_intermediate_ckpts = args.save_intermediate_ckpts,
     data_parallel = False,
     verbose = 4,
@@ -259,6 +259,9 @@ mdl = ADRDModel(
         
 trn_filter_transform = FilterImages(dat_type='trn')
 vld_filter_transform = FilterImages(dat_type='vld')
+
+print(f"CUDA is available: {torch.cuda.is_available()}")
+print(dat_trn.feature_modalities)
 
 if args.img_mode == 0 or args.img_mode == 2:
     mdl.fit(dat_trn.features, dat_vld.features, dat_trn.labels, dat_vld.labels, img_train_trans=trn_filter_transform, img_vld_trans=vld_filter_transform, img_mode=args.img_mode)

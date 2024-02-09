@@ -2,7 +2,7 @@
 
 # run this script from adrd_tool/
 
-conda activate adrd
+# conda activate adrd
 pip install .
 
 # install the package
@@ -11,11 +11,11 @@ pip install .
 
 # define the variables
 prefix="."
-data_path="${prefix}/data/training_cohorts/new_nacc_revised_selection.csv"
-train_path="${prefix}/data/train_vld_test_split_updated/demo_train.csv"
-vld_path="${prefix}/data/train_vld_test_split_updated/demo_vld.csv"
-test_path="${prefix}/data/train_vld_test_split_updated/nacc_test_with_np_cli.csv"
-cnf_file="${prefix}/dev/data/toml_files/default_conf_new.toml"
+data_path="${prefix}/adrd_transformer/data/adni_a4_data.csv"
+train_path="${prefix}/adrd_transformer/data/adni_train_split.csv"
+vld_path="${prefix}/adrd_transformer/data/adni_val_split.csv"
+test_path="${prefix}/adrd_transformer/data/a4_test_split.csv"
+cnf_file="${prefix}/adrd_transformer/meta_files/ab_tau_config.toml"
 
 # Note for setting the flags
 # 1. If training without MRIs
@@ -37,9 +37,13 @@ cnf_file="${prefix}/dev/data/toml_files/default_conf_new.toml"
 # mri_type=SEQ
 
 
-img_net="SwinUNETREMB"
-img_mode=1
-mri_type=ALL
+# img_net="SwinUNETREMB"
+# img_mode=1
+# mri_type=ALL
+
+img_net="NonImg"
+img_mode=-1
+mri_type=SEQ
 
 ckpt_path="${prefix}/dev/ckpt/model_ckpt.pt"
 emb_path="/data_1/dlteif/SwinUNETR_MRI_stripped_emb/"

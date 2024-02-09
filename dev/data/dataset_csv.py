@@ -19,16 +19,21 @@ import random
 #%%
 
 
-value_mapping = {
-    'his_SEX':          {'female': 0, 'male': 1},
-    'his_HISPANIC':     {'no': 0, 'yes': 1},
-    'his_NACCNIHR':     {'whi': 0, 'blk': 1, 'asi': 2, 'ind': 3, 'haw': 4, 'mul': 5},
-    'his_RACE':         {'whi': 0, 'blk': 1, 'asi': 2, 'ind': 3, 'haw': 4, 'oth': 5},
-    'his_RACESEC':      {'whi': 0, 'blk': 1, 'asi': 2, 'ind': 3, 'haw': 4, 'oth': 5},
-    'his_RACETER':      {'whi': 0, 'blk': 1, 'asi': 2, 'ind': 3, 'haw': 4, 'oth': 5},
-}
+# value_mapping = {
+#     'his_SEX':          {'female': 0, 'male': 1},
+#     'his_HISPANIC':     {'no': 0, 'yes': 1},
+#     'his_NACCNIHR':     {'whi': 0, 'blk': 1, 'asi': 2, 'ind': 3, 'haw': 4, 'mul': 5},
+#     'his_RACE':         {'whi': 0, 'blk': 1, 'asi': 2, 'ind': 3, 'haw': 4, 'oth': 5},
+#     'his_RACESEC':      {'whi': 0, 'blk': 1, 'asi': 2, 'ind': 3, 'haw': 4, 'oth': 5},
+#     'his_RACETER':      {'whi': 0, 'blk': 1, 'asi': 2, 'ind': 3, 'haw': 4, 'oth': 5},
+# }
 
-label_names = ['NC', 'MCI', 'DE', 'AD', 'LBD', 'VD', 'PRD', 'FTD', 'NPH', 'SEF', 'PSY', 'TBI', 'ODE']
+# label_names = ['NC', 'MCI', 'DE', 'AD', 'LBD', 'VD', 'PRD', 'FTD', 'NPH', 'SEF', 'PSY', 'TBI', 'ODE']
+
+value_mapping = {}
+
+label_names = ['amy_label', 'tau_label']
+
 
 # To use on ivc-ml scc
 # nacc_mri_info = "/projectnb/ivc-ml/dlteif/NACC_raw/mri_3d.json"
@@ -36,7 +41,8 @@ label_names = ['NC', 'MCI', 'DE', 'AD', 'LBD', 'VD', 'PRD', 'FTD', 'NPH', 'SEF',
 
 # uncomment this to use on echo
 # nacc_mri_info = "../clinician_review/mri_3d.json"
-other_path = '/SeaExpCIFS/Raw_MRIs/ALL_nii'
+# other_path = '/SeaExpCIFS/Raw_MRIs/ALL_nii'
+other_path = '/SeaExpCIFS/ADNI_MRI/raw'
 
 class CSVDataset:
 
@@ -70,7 +76,7 @@ class CSVDataset:
         
 
         avail_cohorts = set()
-        df['mri_zip'] = df.apply(apply_mri_zip, axis=1)
+        # df['mri_zip'] = df.apply(apply_mri_zip, axis=1)
         cnt = 0
         
         

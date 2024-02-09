@@ -1,0 +1,16 @@
+colorspacious==1.1.2
+dill==0.3.7
+Django==4.1.7
+matplotlib==3.7.1
+monai==1.2.0
+nibabel==5.2.0
+numba==0.57.0
+numpy==1.24.2
+pandas==1.5.3
+scikit_learn==1.2.2
+scipy==1.12.0
+setuptools==65.5.0
+skimage==0.0
+tomlkit==0.12.3
+torch==2.1.0.dev20230312+cu117
+tqdm==4.65.0

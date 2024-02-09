@@ -11,7 +11,7 @@ labels = ['amy_label', 'tau_label']
 
 import pandas as pd
 
-path = '../../../meta_files/meta_file.csv'
+path = '../../../meta_files/ab_tau_config.toml'
 df = pd.read_csv(path)
 # output features
 print('[features]')
