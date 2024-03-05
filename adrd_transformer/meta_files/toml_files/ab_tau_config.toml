@@ -1,0 +1,404 @@
+[features]
+
+	[feature.SEX]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.EDUC]
+	type = "numerical"
+	shape = [1]
+
+	[feature.PRIMLANG]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.HISPANIC]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.RACE]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.RESIDENC]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.MARISTAT]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.HANDED]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.DIAGNOSIS]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.MTL_VOLUME]
+	type = "numerical"
+	shape = [1]
+
+	[feature.NEO-T_VOLUME]
+	type = "numerical"
+	shape = [1]
+
+	[feature.TEMPO_PARIETAL_VOLUME]
+	type = "numerical"
+	shape = [1]
+
+	[feature.FRONTAL_VOLUME]
+	type = "numerical"
+	shape = [1]
+
+	[feature.NACCMMSE]
+	type = "numerical"
+	shape = [1]
+
+	[feature.MEMORY]
+	type = "numerical"
+	shape = [1]
+
+	[feature.ORIENT]
+	type = "numerical"
+	shape = [1]
+
+	[feature.JUDGEMENT]
+	type = "numerical"
+	shape = [1]
+
+	[feature.COMMUN]
+	type = "numerical"
+	shape = [1]
+
+	[feature.HOMEHOBB]
+	type = "numerical"
+	shape = [1]
+
+	[feature.PERSCARE]
+	type = "numerical"
+	shape = [1]
+
+	[feature.CDRGLOB]
+	type = "numerical"
+	shape = [1]
+
+	[feature.CDRSUM]
+	type = "numerical"
+	shape = [1]
+
+	[feature.WEIGHT]
+	type = "numerical"
+	shape = [1]
+
+	[feature.HEIGHT]
+	type = "numerical"
+	shape = [1]
+
+	[feature.BPSYS]
+	type = "numerical"
+	shape = [1]
+
+	[feature.BPDIAS]
+	type = "numerical"
+	shape = [1]
+
+	[feature.HRATE]
+	type = "numerical"
+	shape = [1]
+
+	[feature.AGE_MRI]
+	type = "numerical"
+	shape = [1]
+
+	[feature.MOCATRAI]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.MOCACUBE]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.MOCACLOC]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.MOCACLON]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.MOCACLOH]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.MOCANAMI]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.MOCADIGI]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.MOCALETT]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.MOCASER7]
+	type = "numerical"
+	shape = [1]
+
+	[feature.MOCAREPE]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.MOCAFLUE]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.MOCAABST]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.MOCARECN]
+	type = "numerical"
+	shape = [1]
+
+	[feature.MOCAORDT]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.MOCAORMO]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.MOCAORYR]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.MOCAORDY]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.MOCAORPL]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.MOCAORCT]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.NACCMOCA]
+	type = "numerical"
+	shape = [1]
+
+	[feature.SATIS]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.DROPACT]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.EMPTY]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.BORED]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.SPIRITS]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.AFRAID]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.HAPPY]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.HELPLESS]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.STAYHOME]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.MEMPROB]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.WONDRFUL]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.WRTHLESS]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.ENERGY]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.HOPELESS]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.BETTER]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.NACCGDS]
+	type = "numerical"
+	shape = [1]
+
+	[feature.DEL]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.HALL]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.AGIT]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.DEPD]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.ANX]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.ELAT]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.APA]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.DISN]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.IRR]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.MOT]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.NITE]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.APP]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.NPISCORE]
+	type = "numerical"
+	shape = [1]
+
+	[feature.BILLS]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.TAXES]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.SHOPPING]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.GAMES]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.STOVE]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.MEALPREP]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.EVENTS]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.PAYATTN]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.REMDATES]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.TRAVEL]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.FAQTOTAL]
+	type = "numerical"
+	shape = [1]
+
+	[feature.MMSEORDA]
+	type = "numerical"
+	shape = [1]
+
+	[feature.MMSEORLO]
+	type = "numerical"
+	shape = [1]
+
+	[feature.NACCMOM]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.NACCDAD]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.Psychiatric]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.Neurologic]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.Cardiovascular]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.Endocrine_Metabolic]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.Musculoskeletal]
+	type = "categorical"
+	num_categories = 99
+
+	[feature.Smoking_Alcohol_Drug_Use]
+	type = "categorical"
+	num_categories = 99
+
+[labels]
+
+	[label.amy_label]
+	type = "categorical"
+	num_categories = 2
+
+	[label.tau_label]
+	type = "categorical"
+	num_categories = 2
+

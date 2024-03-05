@@ -11,11 +11,19 @@ pip install .
 
 # define the variables
 prefix="."
-data_path="${prefix}/adrd_transformer/data/adni_a4_data.csv"
-train_path="${prefix}/adrd_transformer/data/adni_train_split.csv"
-vld_path="${prefix}/adrd_transformer/data/adni_val_split.csv"
-test_path="${prefix}/adrd_transformer/data/a4_test_split.csv"
-cnf_file="${prefix}/adrd_transformer/meta_files/ab_tau_config.toml"
+# data_path="${prefix}/adrd_transformer/data/adni_data_single.csv"
+# train_path="${prefix}/adrd_transformer/data/adni_train_split_single.csv"
+# vld_path="${prefix}/adrd_transformer/data/adni_val_split_single.csv"
+# test_path="${prefix}/adrd_transformer/data/a4_test_split.csv"
+# cnf_file="${prefix}/adrd_transformer/meta_files/ab_tau_config_finetune.toml"
+
+
+data_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/oasis_data_single.csv" # path to the data file before train val test split
+train_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/oasis_train_split_single.csv"
+vld_path="//home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/lucky_adni_val_split_single.csv"
+test_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/a4_test_split.csv"
+cnf_file="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/meta_files/oasis_config.toml"
+
 
 # Note for setting the flags
 # 1. If training without MRIs
@@ -32,20 +40,23 @@ cnf_file="${prefix}/adrd_transformer/meta_files/ab_tau_config.toml"
 # mri_type = SEQ if training sequence specific / using separate feature for each sequence
 
 
-# img_net="NonImg"
-# img_mode=-1
-# mri_type=SEQ
-
+img_net="NonImg"
+img_mode=-1
+mri_type=SEQ
 
 # img_net="SwinUNETREMB"
 # img_mode=1
 # mri_type=ALL
 
-img_net="NonImg"
-img_mode=-1
-mri_type=SEQ
+# img_net="DenseNetEMB"
+# img_mode=1
+# mri_type=SEQ
 
-ckpt_path="${prefix}/dev/ckpt/model_ckpt.pt"
+# img_net="NonImg"
+# img_mode=-1
+# mri_type=SEQ
+
+ckpt_path="${prefix}/dev/ckpt/model_ckpt_oasis.pt"
 emb_path="/data_1/dlteif/SwinUNETR_MRI_stripped_emb/"
 
 # run train.py
@@ -53,4 +64,4 @@ emb_path="/data_1/dlteif/SwinUNETR_MRI_stripped_emb/"
 python dev/train.py --data_path $data_path --train_path $train_path --vld_path $vld_path --test_path $test_path --cnf_file $cnf_file --ckpt_path $ckpt_path \
                     --d_model 256 --nhead 1 --num_epochs 256 --batch_size 128 --lr 5e-4 --gamma 2 --img_mode $img_mode --img_net $img_net --img_size 128 \
                     --patch_size 16 --ckpt_path $ckpt_path --mri_type $mri_type --train_imgnet --cnf_file ${cnf_file} --train_path ${train_path} \
-                    --vld_path ${vld_path} --data_path ${data_path} --fusion_stage middle --imgnet_layers 4 --weight_decay 0.01 --emb_path $emb_path --ranking_loss --save_intermediate_ckpts #--load_from_ckpt #--wandb #--balanced_sampling
+                    --vld_path ${vld_path} --data_path ${data_path} --fusion_stage middle --imgnet_layers 4 --weight_decay 0.01 --wandb --emb_path $emb_path --ranking_loss --save_intermediate_ckpts #--load_from_ckpt #--wandb #--balanced_sampling

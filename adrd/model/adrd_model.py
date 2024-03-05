@@ -217,6 +217,7 @@ class ADRDModel(BaseEstimator):
         self._dataloader_num_workers = _dataloader_num_workers
         self._amp_enabled = _amp_enabled
         self.scaler = torch.cuda.amp.GradScaler()
+        self._init_net()
 
     @_manage_ctx_fit
     def fit(self, x_trn, x_vld, y_trn, y_vld, img_train_trans=None, img_vld_trans=None, img_mode=0) -> Self:
@@ -263,7 +264,7 @@ class ADRDModel(BaseEstimator):
                         info['shape'] = (1, 768, 4, 4, 4)
                         info['img_shape'] = (1, 768, 4, 4, 4)
         
-        self._init_net()
+        # self._init_net()
         
         ldr_trn, ldr_vld = self._init_dataloader(x_trn, x_vld, y_trn, y_vld, img_train_trans=img_train_trans, img_vld_trans=img_vld_trans)
 
@@ -431,7 +432,7 @@ class ADRDModel(BaseEstimator):
                                     loss += self.lambda_coeff * self.margin_loss(torch.sigmoid(outputs[k])[pairs],torch.sigmoid(outputs[kk][pairs]),y_batch[k][pairs]-y_batch[kk][pairs])
 
                 for i, k in enumerate(self.tgt_modalities):
-                    loss_task = self.loss_fn[k](outputs[k], y_batch[k], epoch=epoch) * 20
+                    loss_task = self.loss_fn[k](outputs[k], y_batch[k], epoch=epoch)
                     msk_loss_task = loss_task * y_mask[k]
                     # msk_loss_mean = msk_loss_task.sum() / y_mask[k].sum()
                     msk_loss_mean = msk_loss_task.sum()
@@ -549,7 +550,7 @@ class ADRDModel(BaseEstimator):
 
                 # calculate multitask loss
                 for i, k in enumerate(self.tgt_modalities):
-                    loss_task = self.loss_fn[k](outputs[k], y_batch[k], epoch=epoch) * 20
+                    loss_task = self.loss_fn[k](outputs[k], y_batch[k], epoch=epoch)
                     msk_loss_task = loss_task * y_mask[k]
                     losses_vld[i] += msk_loss_task.detach().cpu().numpy().tolist()
 

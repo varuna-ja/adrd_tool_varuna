@@ -187,6 +187,7 @@ class Transformer(torch.nn.Module):
                         # print("mask is False, out_emb[k]: ", out_emb[k].size())
                     
                 else:
+                   # print(k)
                     out_emb[k] = self.modules_emb_src[k](x[k])
                     
                 # out_emb[k] = self.modules_emb_src[k](x[k])

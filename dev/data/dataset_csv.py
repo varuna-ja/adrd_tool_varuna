@@ -19,20 +19,20 @@ import random
 #%%
 
 
-# value_mapping = {
-#     'his_SEX':          {'female': 0, 'male': 1},
-#     'his_HISPANIC':     {'no': 0, 'yes': 1},
-#     'his_NACCNIHR':     {'whi': 0, 'blk': 1, 'asi': 2, 'ind': 3, 'haw': 4, 'mul': 5},
-#     'his_RACE':         {'whi': 0, 'blk': 1, 'asi': 2, 'ind': 3, 'haw': 4, 'oth': 5},
-#     'his_RACESEC':      {'whi': 0, 'blk': 1, 'asi': 2, 'ind': 3, 'haw': 4, 'oth': 5},
-#     'his_RACETER':      {'whi': 0, 'blk': 1, 'asi': 2, 'ind': 3, 'haw': 4, 'oth': 5},
-# }
+value_mapping = {
+    'his_SEX':          {'female': 0, 'male': 1},
+    'his_HISPANIC':     {'no': 0, 'yes': 1},
+    'his_NACCNIHR':     {'whi': 0, 'blk': 1, 'asi': 2, 'ind': 3, 'haw': 4, 'mul': 5}
+    # 'his_RACE':         {'whi': 0, 'blk': 1, 'asi': 2, 'ind': 3, 'haw': 4, 'oth': 5},
+    # 'his_RACESEC':      {'whi': 0, 'blk': 1, 'asi': 2, 'ind': 3, 'haw': 4, 'oth': 5},
+    # 'his_RACETER':      {'whi': 0, 'blk': 1, 'asi': 2, 'ind': 3, 'haw': 4, 'oth': 5},
+}
 
 # label_names = ['NC', 'MCI', 'DE', 'AD', 'LBD', 'VD', 'PRD', 'FTD', 'NPH', 'SEF', 'PSY', 'TBI', 'ODE']
 
-value_mapping = {}
+# value_mapping = {}
 
-label_names = ['amy_label', 'tau_label']
+label_names = ['amy_label', 'tau_label', 'cd_DIAGNOSIS']
 
 
 # To use on ivc-ml scc
@@ -426,8 +426,7 @@ class CSVDataset:
                             data = np.load(path_fn, mmap_mode='r')
                             if np.isnan(data).any():
                                 npy.append(None)
-                                continue
-                            
+                                continue                            
                             if 'swinunet' in emb_path.lower():
                                 if len(data.shape) < 5:
                                     data = np.expand_dims(data, axis=0)
