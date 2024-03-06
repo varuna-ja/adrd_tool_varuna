@@ -18,15 +18,15 @@ basedir = '.'
 # train_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/adni_train_split_single.csv"
 # vld_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/adni_val_split_single.csv"
 # test_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/a4_test_split_single.csv"
-# cnf_file="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/meta_files/ab_tau_config_finetune.toml"
+# cnf_file="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/meta_files/adni_config.toml"
 # orig_ckpt_path = '/data_1/skowshik/ckpts_backbone_swinunet/ckpt_without_imaging.pt'
-# new_ckpt_path = f'{basedir}/dev/ckpt/model_ckpt_finetune_no_rl.pt'
+# new_ckpt_path = f'{basedir}/dev/ckpt/model_ckpt_adni_finetune.pt'
 
 data_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/oasis_data_single.csv" # path to the data file before train val test split
 train_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/oasis_train_split_single.csv"
-vld_path="//home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/lucky_adni_val_split_single.csv"
-test_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/a4_test_split_single.csv"
-cnf_file="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/meta_files/oasis_config.toml"
+vld_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/oasis_val_split_single.csv"
+test_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/adni_data_single.csv"
+cnf_file="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/meta_files/oasis_new_config.toml"
 orig_ckpt_path = '/data_1/skowshik/ckpts_backbone_swinunet/ckpt_without_imaging.pt'
 new_ckpt_path = f'{basedir}/dev/ckpt/model_ckpt_finetune_oasis.pt'
 
@@ -43,7 +43,7 @@ mri_type="SEQ"
 labels_to_remove = ['NC', 'MCI', 'DE', 'AD', 'LBD', 'VD', 'PRD', 'FTD', 'NPH', 'SEF', 'PSY', 'TBI', 'ODE']
 
 # add the new labels
-new_labels = ['amy_label', 'tau_label']
+new_labels = ['amy_label', 'tau_label', 'NC', 'MCI', 'DE']
 train_path
 state_dict = torch.load(orig_ckpt_path, map_location=torch.device('cpu'))
 if 'state_dict' in state_dict:

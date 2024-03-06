@@ -36,10 +36,6 @@
 	type = "numerical"
 	shape = [1]
 
-	[feature.cd_DIAGNOSIS]
-	type = "categorical"
-	num_categories = 3
-
 	[feature.his_NACCMOM]
 	type = "categorical"
 	num_categories = 2
@@ -65,6 +61,42 @@
 	shape = [1]
 
 	[feature.ph_HRATE]
+	type = "numerical"
+	shape = [1]
+
+	[feature.cvd_ABRUPT]
+	type = "categorical"
+	num_categories = 2
+
+	[feature.cvd_STEPWISE]
+	type = "categorical"
+	num_categories = 2
+
+	[feature.cvd_SOMATIC]
+	type = "categorical"
+	num_categories = 2
+
+	[feature.cvd_EMOT]
+	type = "categorical"
+	num_categories = 2
+
+	[feature.cvd_HXHYPER]
+	type = "categorical"
+	num_categories = 2
+
+	[feature.cvd_HXSTROKE]
+	type = "categorical"
+	num_categories = 2
+
+	[feature.cvd_FOCLSYM]
+	type = "categorical"
+	num_categories = 2
+
+	[feature.cvd_FOCLSIGN]
+	type = "categorical"
+	num_categories = 2
+
+	[feature.cvd_HACHIN]
 	type = "numerical"
 	shape = [1]
 
@@ -117,42 +149,6 @@
 	num_categories = 4
 
 	[feature.npiq_NPISCORE]
-	type = "numerical"
-	shape = [1]
-
-	[feature.cvd_ABRUPT]
-	type = "categorical"
-	num_categories = 2
-
-	[feature.cvd_STEPWISE]
-	type = "categorical"
-	num_categories = 2
-
-	[feature.cvd_SOMATIC]
-	type = "categorical"
-	num_categories = 2
-
-	[feature.cvd_EMOT]
-	type = "categorical"
-	num_categories = 2
-
-	[feature.cvd_HXHYPER]
-	type = "categorical"
-	num_categories = 2
-
-	[feature.cvd_HXSTROKE]
-	type = "categorical"
-	num_categories = 2
-
-	[feature.cvd_FOCLSYM]
-	type = "categorical"
-	num_categories = 2
-
-	[feature.cvd_FOCLSIGN]
-	type = "categorical"
-	num_categories = 2
-
-	[feature.cvd_HACHIN]
 	type = "numerical"
 	shape = [1]
 
@@ -276,6 +272,30 @@
 	type = "numerical"
 	shape = [1]
 
+	[feature.bat_BOSTON]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_MEMUNITS]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_ANIMALS]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_TRAILA]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_TRAILB]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_MINTTOTS]
+	type = "numerical"
+	shape = [1]
+
 	[feature.bat_NACCMOCA]
 	type = "numerical"
 	shape = [1]
@@ -356,42 +376,6 @@
 	type = "categorical"
 	num_categories = 2
 
-	[feature.cdr_MEMORY]
-	type = "numerical"
-	shape = [1]
-
-	[feature.cdr_ORIENT]
-	type = "numerical"
-	shape = [1]
-
-	[feature.cdr_JUDGEMENT]
-	type = "numerical"
-	shape = [1]
-
-	[feature.cdr_COMMUN]
-	type = "numerical"
-	shape = [1]
-
-	[feature.cdr_HOMEHOBB]
-	type = "numerical"
-	shape = [1]
-
-	[feature.cdr_PERSCARE]
-	type = "numerical"
-	shape = [1]
-
-	[feature.cdr_CDRSUM]
-	type = "numerical"
-	shape = [1]
-
-	[feature.cdr_CDRGLOB]
-	type = "numerical"
-	shape = [1]
-
-	[feature.blood_PLASMAPTAU181]
-	type = "numerical"
-	shape = [1]
-
 	[feature.FS_MTL_VOLUME]
 	type = "numerical"
 	shape = [1]
@@ -439,5 +423,17 @@
 	num_categories = 2
 
 	[label.tau_label]
+	type = "categorical"
+	num_categories = 2
+
+	[label.NC]
+	type = "categorical"
+	num_categories = 2
+
+	[label.MCI]
+	type = "categorical"
+	num_categories = 2
+
+	[label.DE]
 	type = "categorical"
 	num_categories = 2

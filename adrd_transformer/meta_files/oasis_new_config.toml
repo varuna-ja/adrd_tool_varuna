@@ -8,33 +8,37 @@
 	type = "categorical"
 	num_categories = 2
 
-	[feature.his_PRIMLANG]
-	type = "categorical"
-	num_categories = 3
-
 	[feature.his_EDUC]
 	type = "numerical"
 	shape = [1]
 
 	[feature.his_MARISTAT]
 	type = "categorical"
+	num_categories = 6
+
+	[feature.his_LIVSIT]
+	type = "categorical"
 	num_categories = 5
+
+	[feature.his_INDEPEND]
+	type = "categorical"
+	num_categories = 4
 
 	[feature.his_RESIDENC]
 	type = "categorical"
-	num_categories = 3
+	num_categories = 4
 
 	[feature.his_HANDED]
 	type = "categorical"
-	num_categories = 2
-
-	[feature.his_NACCNIHR]
-	type = "categorical"
-	num_categories = 6
+	num_categories = 3
 
 	[feature.his_NACCAGE]
 	type = "numerical"
 	shape = [1]
+
+	[feature.his_NACCNIHR]
+	type = "categorical"
+	num_categories = 6
 
 	[feature.his_NACCMOM]
 	type = "categorical"
@@ -43,6 +47,118 @@
 	[feature.his_NACCDAD]
 	type = "categorical"
 	num_categories = 2
+
+	[feature.his_TOBAC30]
+	type = "categorical"
+	num_categories = 2
+
+	[feature.his_TOBAC100]
+	type = "categorical"
+	num_categories = 2
+
+	[feature.his_SMOKYRS]
+	type = "numerical"
+	shape = [1]
+
+	[feature.his_PACKSPER]
+	type = "numerical"
+	shape = [1]
+
+	[feature.his_QUITSMOK]
+	type = "numerical"
+	shape = [1]
+
+	[feature.his_CVHATT]
+	type = "categorical"
+	num_categories = 3
+
+	[feature.his_CVAFIB]
+	type = "categorical"
+	num_categories = 3
+
+	[feature.his_CVANGIO]
+	type = "categorical"
+	num_categories = 3
+
+	[feature.his_CVBYPASS]
+	type = "categorical"
+	num_categories = 3
+
+	[feature.his_CVPACE]
+	type = "categorical"
+	num_categories = 3
+
+	[feature.his_CVCHF]
+	type = "categorical"
+	num_categories = 3
+
+	[feature.his_CVOTHR]
+	type = "categorical"
+	num_categories = 3
+
+	[feature.his_CBSTROKE]
+	type = "categorical"
+	num_categories = 3
+
+	[feature.his_CBTIA]
+	type = "categorical"
+	num_categories = 3
+
+	[feature.his_PD]
+	type = "categorical"
+	num_categories = 2
+
+	[feature.his_PDOTHR]
+	type = "categorical"
+	num_categories = 2
+
+	[feature.his_SEIZURES]
+	type = "categorical"
+	num_categories = 3
+
+	[feature.his_NCOTHR]
+	type = "categorical"
+	num_categories = 3
+
+	[feature.his_DIABETES]
+	type = "categorical"
+	num_categories = 3
+
+	[feature.his_HYPERTEN]
+	type = "categorical"
+	num_categories = 3
+
+	[feature.his_HYPERCHO]
+	type = "categorical"
+	num_categories = 3
+
+	[feature.his_B12DEF]
+	type = "categorical"
+	num_categories = 3
+
+	[feature.his_THYROID]
+	type = "categorical"
+	num_categories = 3
+
+	[feature.his_INCONTU]
+	type = "categorical"
+	num_categories = 3
+
+	[feature.his_INCONTF]
+	type = "categorical"
+	num_categories = 3
+
+	[feature.his_ALCOHOL]
+	type = "categorical"
+	num_categories = 3
+
+	[feature.his_ABUSOTHR]
+	type = "categorical"
+	num_categories = 3
+
+	[feature.his_PSYCDIS]
+	type = "categorical"
+	num_categories = 3
 
 	[feature.ph_HEIGHT]
 	type = "numerical"
@@ -61,6 +177,30 @@
 	shape = [1]
 
 	[feature.ph_HRATE]
+	type = "numerical"
+	shape = [1]
+
+	[feature.ph_VISION]
+	type = "numerical"
+	shape = [1]
+
+	[feature.ph_VISCORR]
+	type = "numerical"
+	shape = [1]
+
+	[feature.ph_VISWCORR]
+	type = "numerical"
+	shape = [1]
+
+	[feature.ph_HEARING]
+	type = "numerical"
+	shape = [1]
+
+	[feature.ph_HEARAID]
+	type = "numerical"
+	shape = [1]
+
+	[feature.ph_HEARWAID]
 	type = "numerical"
 	shape = [1]
 
@@ -99,6 +239,10 @@
 	[feature.cvd_HACHIN]
 	type = "numerical"
 	shape = [1]
+
+	[feature.cvd_CVDCOG]
+	type = "categorical"
+	num_categories = 2
 
 	[feature.npiq_DEL]
 	type = "categorical"
@@ -147,10 +291,6 @@
 	[feature.npiq_APP]
 	type = "categorical"
 	num_categories = 4
-
-	[feature.npiq_NPISCORE]
-	type = "numerical"
-	shape = [1]
 
 	[feature.gds_SATIS]
 	type = "categorical"
@@ -212,10 +352,6 @@
 	type = "categorical"
 	num_categories = 2
 
-	[feature.gds_NACCGDS]
-	type = "numerical"
-	shape = [1]
-
 	[feature.faq_BILLS]
 	type = "categorical"
 	num_categories = 4
@@ -256,23 +392,83 @@
 	type = "categorical"
 	num_categories = 4
 
-	[feature.faq_FAQTOTAL]
-	type = "numerical"
-	shape = [1]
-
-	[feature.bat_MMSEORDA]
-	type = "numerical"
-	shape = [1]
-
-	[feature.bat_MMSEORLO]
-	type = "numerical"
-	shape = [1]
-
 	[feature.bat_NACCMMSE]
 	type = "numerical"
 	shape = [1]
 
-	[feature.bat_NACCMOCA]
+	[feature.bat_LOGIMEM]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_MEMUNITS]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_UDSBENTC]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_UDSBENTD]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_UDSBENRS]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_ANIMALS]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_VEG]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_TRAILA]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_TRAILB]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_WAIS]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_UDSVERFC]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_UDSVERFN]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_UDSVERNF]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_UDSVERLC]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_UDSVERLR]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_UDSVERLN]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_UDSVERTN]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_UDSVERTE]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_UDSVERTI]
 	type = "numerical"
 	shape = [1]
 
@@ -297,8 +493,8 @@
 	num_categories = 2
 
 	[feature.bat_MOCANAMI]
-	type = "categorical"
-	num_categories = 4
+	type = "numerical"
+	shape = [1]
 
 	[feature.bat_MOCADIGI]
 	type = "categorical"
@@ -352,39 +548,67 @@
 	type = "categorical"
 	num_categories = 2
 
-	[feature.cd_DIAGNOSIS]
-	type = "categorical"
-	num_categories = 3
-
-	[feature.cdr_MEMORY]
+	[feature.bat_NACCMOCA]
 	type = "numerical"
 	shape = [1]
 
-	[feature.cdr_ORIENT]
+	[feature.bat_CRAFTVRS]
 	type = "numerical"
 	shape = [1]
 
-	[feature.cdr_JUDGEMENT]
+	[feature.bat_CRAFTURS]
 	type = "numerical"
 	shape = [1]
 
-	[feature.cdr_COMMUN]
+	[feature.bat_DIGFORCT]
 	type = "numerical"
 	shape = [1]
 
-	[feature.cdr_HOMEHOBB]
+	[feature.bat_DIGFORSL]
 	type = "numerical"
 	shape = [1]
 
-	[feature.cdr_PERSCARE]
+	[feature.bat_DIGBACCT]
 	type = "numerical"
 	shape = [1]
 
-	[feature.cdr_CDRSUM]
+	[feature.bat_DIGBACLS]
 	type = "numerical"
 	shape = [1]
 
-	[feature.cdr_CDRGLOB]
+	[feature.bat_CRAFTDVR]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_CRAFTDRE]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_CRAFTCUE]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_MINTTOTS]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_MINTTOTW]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_MINTSCNG]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_MINTSCNC]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_MINTPCNG]
+	type = "numerical"
+	shape = [1]
+
+	[feature.bat_MINTPCNC]
 	type = "numerical"
 	shape = [1]
 
@@ -404,29 +628,13 @@
 	type = "numerical"
 	shape = [1]
 
-	[feature.iha_Psychiatric]
-	type = "categorical"
-	num_categories = 3
+	[feature.gds_NACCGDS]
+	type = "numerical"
+	shape = [1]
 
-	[feature.iha_Neurologic]
-	type = "categorical"
-	num_categories = 3
-
-	[feature.iha_Cardiovascular]
-	type = "categorical"
-	num_categories = 3
-
-	[feature.iha_Endocrine_Metabolic]
-	type = "categorical"
-	num_categories = 3
-
-	[feature.iha_Musculoskeletal]
-	type = "categorical"
-	num_categories = 3
-
-	[feature.iha_Smoking_Alcohol_Drug_Use]
-	type = "categorical"
-	num_categories = 3
+	[feature.faq_FAQTOTAL]
+	type = "numerical"
+	shape = [1]
 
 [labels]
 
@@ -435,6 +643,18 @@
 	num_categories = 2
 
 	[label.tau_label]
+	type = "categorical"
+	num_categories = 2
+
+	[label.NC]
+	type = "categorical"
+	num_categories = 2
+
+	[label.MCI]
+	type = "categorical"
+	num_categories = 2
+
+	[label.DE]
 	type = "categorical"
 	num_categories = 2
 
