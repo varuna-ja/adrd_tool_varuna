@@ -22,13 +22,17 @@ basedir = '.'
 # orig_ckpt_path = '/data_1/skowshik/ckpts_backbone_swinunet/ckpt_without_imaging.pt'
 # new_ckpt_path = f'{basedir}/dev/ckpt/model_ckpt_adni_finetune.pt'
 
-data_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/oasis_data_single.csv" # path to the data file before train val test split
-train_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/oasis_train_split_single.csv"
-vld_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/oasis_val_split_single.csv"
+# data_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/oasis_data_single.csv" # path to the data file before train val test split
+# train_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/oasis_train_split_single.csv"
+# vld_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/oasis_val_split_single.csv"
 test_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/adni_data_single.csv"
 cnf_file="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/meta_files/oasis_new_config.toml"
 orig_ckpt_path = '/data_1/skowshik/ckpts_backbone_swinunet/ckpt_without_imaging.pt'
 new_ckpt_path = f'{basedir}/dev/ckpt/model_ckpt_finetune_oasis.pt'
+
+data_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/oasis_data_adrd.csv" # path to the data file before train val test split
+train_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/oasis_train_split_adrd.csv"
+vld_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/oasis_val_split_adrd.csv"
 
 # no need to change these as they will not be used with non-imaging model
 emb_path = '/data_1/dlteif/SwinUNETR_MRI_stripped_MNI_emb/' 
@@ -40,10 +44,11 @@ img_mode=-1
 mri_type="SEQ"
 
 # these are labels to remove from the model's state dictionary
-labels_to_remove = ['NC', 'MCI', 'DE', 'AD', 'LBD', 'VD', 'PRD', 'FTD', 'NPH', 'SEF', 'PSY', 'TBI', 'ODE']
+labels_to_remove = ['AD', 'LBD', 'VD', 'PRD', 'FTD', 'NPH', 'SEF', 'PSY', 'TBI', 'ODE']
 
 # add the new labels
 new_labels = ['amy_label', 'tau_label', 'NC', 'MCI', 'DE']
+# new_labels = ['NC', 'MCI', 'DE']
 train_path
 state_dict = torch.load(orig_ckpt_path, map_location=torch.device('cpu'))
 if 'state_dict' in state_dict:
