@@ -28,7 +28,7 @@ basedir = '.'
 test_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/nacc_test.csv"
 cnf_file="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/meta_files/train_imaging_0422_config.toml"
 orig_ckpt_path = '/data_1/skowshik/ckpts_backbone_swinunet/ckpt_without_imaging.pt'
-new_ckpt_path = f'{basedir}/dev/ckpt/model_ckpt_finetune_alldata.pt'
+new_ckpt_path = f'{basedir}/dev/ckpt/model_ckpt_finetune_alldata_BA.pt'
 
 data_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/train_val_data.csv" # path to the data file before train val test split
 train_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/train_data.csv"
@@ -118,7 +118,7 @@ mdl = ADRDModel(
     lr = lr,
     weight_decay = weight_decay,
     gamma = gamma,
-    criterion = 'MCC',
+    criterion = 'Balanced Accuracy',
     device = 'cuda',
     cuda_devices = [2],
     img_net = img_net,

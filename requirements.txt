@@ -3,7 +3,8 @@ monai
 numpy
 scikit_learn
 scipy
-torch
+torch==2.1.0
 torchvision
 tqdm
 wandb
+seaborn

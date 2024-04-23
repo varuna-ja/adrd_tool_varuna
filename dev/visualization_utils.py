@@ -47,24 +47,27 @@ from monai.transforms import (
 
 #%%
 # define paths and variables
-radiologist_features = ['ID', 'cdr_CDRGLOB', 'his_NACCAGE', 'his_SEX', 'his_RACE', 'his_RACESEC', 'his_RACETER', 'his_EDUC', 'mri_zip', 'NC', 'MCI', 'DE', 'AD', 'LBD', 'VD', 'PRD', 'FTD', 'NPH', 'SEF', 'PSY', 'TBI', 'ODE']
+# radiologist_features = ['ID', 'cdr_CDRGLOB', 'his_NACCAGE', 'his_SEX', 'his_RACE', 'his_RACESEC', 'his_RACETER', 'his_EDUC', 'mri_zip', 'NC', 'MCI', 'DE', 'AD', 'LBD', 'VD', 'PRD', 'FTD', 'NPH', 'SEF', 'PSY', 'TBI', 'ODE']
+
 basedir=".."
 
 
-# fname = 'nacc_test_with_np_cli'
-fname = 'clinician_review_cases_test'
-save_path = f'{basedir}/model_predictions_after_corr_stripped/'
-dat_file = f'{basedir}/data/train_vld_test_split_updated/{fname}.csv'
-cnf_file = f'{basedir}/dev/data/toml_files/default_conf_new.toml'
-ckpt_path = '/data_1/skowshik/ckpts_backbone_swinunet/new_embeddings_current_best_model_correction.pt'
+# fname = 'bsc_test.csv'
+fname = 'nacc_test.csv'
+# fname = 'clinician_review_cases_test'
+save_path = f'{basedir}/model_predictions_0422/'
+dat_file = "/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/nacc_test.csv"
+# dat_file = "/home/varunaja/mri_pet/ready_data/BSC_ML_DATA.csv"
+cnf_file = "/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/meta_files/train_imaging_0422_config.toml"
+ckpt_path = "/home/varunaja/mri_pet/adrd_tool_varuna/dev/ckpt/model_ckpt_finetune_alldata.pt"
 emb_path = '/data_1/dlteif/SwinUNETR_MRI_stripped_emb/'
 nacc_mri_info = "../clinician_review/mri_3d.json"
 
 dat_file = pd.read_csv(dat_file)
-radiologist_features = [fea for fea in radiologist_features if fea in dat_file.columns]
-if 'radiologist' in fname:
-    dat_file = dat_file[radiologist_features]
-print(dat_file)
+# radiologist_features = [fea for fea in radiologist_features if fea in dat_file.columns]
+# if 'radiologist' in fname:
+#     dat_file = dat_file[radiologist_features]
+# print(dat_file)
 
 # uncommment this to run without image embeddings
 # img_net="NonImg"
@@ -72,48 +75,48 @@ print(dat_file)
 # mri_type="ALL"
 
 img_net="SwinUNETREMB"
-img_mode=1
+img_mode=-1
 mri_type="ALL"
 
-if 'fhs' in fname.lower():
-    # dat_file = dat_file[dat_file['neuropath_avail'] == 1].reset_index(drop=True)
-    print(len(dat_file))
-    print(len(dat_file[~dat_file['ID'].isna()]))
-    dat_file['ID'] = 'FHS_' + dat_file['ID']
-    print(dat_file['ID'])
+# if 'fhs' in fname.lower():
+#     # dat_file = dat_file[dat_file['neuropath_avail'] == 1].reset_index(drop=True)
+#     print(len(dat_file))
+#     print(len(dat_file[~dat_file['ID'].isna()]))
+#     dat_file['ID'] = 'FHS_' + dat_file['ID']
+#     print(dat_file['ID'])
 
 if not os.path.exists(save_path):
     os.makedirs(save_path)
     
 # load saved Transformer
 device = 'cuda:2'
-img_dict = {'img_net': 'SwinUNETREMB', 'img_size': 128, 'patch_size': 16, 'imgnet_ckpt': ckpt_path, 'imgnet_layers': 4, 'train_imgnet': False}
-mdl = ADRDModel.from_ckpt(ckpt_path, device=device, img_dict=img_dict)
+# img_dict = {'img_net': 'SwinUNETREMB', 'img_size': 128, 'patch_size': 16, 'imgnet_ckpt': ckpt_path, 'imgnet_layers': 4, 'train_imgnet': False}
+mdl = ADRDModel.from_ckpt(ckpt_path, device=device)#, img_dict=img_dict)
 print("loaded")
 
 #%%
 # Filter for 3D MRIs
-other_path = '/SeaExpCIFS/Raw_MRIs/ALL_nii'
-other_3d_mris = set()
-for cohort in os.listdir(other_path):
-    print('cohort: ', cohort)
-    for mri in tqdm(os.listdir(f'{other_path}/{cohort}')):
-        if ('stanford' in cohort.lower()) or ('oasis' in cohort.lower()):
-            other_3d_mris.add(mri)
-            continue
+# other_path = '/SeaExpCIFS/Raw_MRIs/ALL_nii'
+# other_3d_mris = set()
+# for cohort in os.listdir(other_path):
+#     print('cohort: ', cohort)
+#     for mri in tqdm(os.listdir(f'{other_path}/{cohort}')):
+#         if ('stanford' in cohort.lower()) or ('oasis' in cohort.lower()):
+#             other_3d_mris.add(mri)
+#             continue
             
-        if mri.endswith('json'):
-            continue
+#         if mri.endswith('json'):
+#             continue
         
-        json_name = mri.replace('.nii', '.json')
-        json_file = f'{other_path}/{cohort}/{json_name}'
-        if not os.path.exists(json_file):
-            continue
-        with open(json_file, 'r') as fi:
-            data = json.load(fi)
-            if 'MRAcquisitionType' not in data or data['MRAcquisitionType'] == '2D':
-                continue
-        other_3d_mris.add(mri)
+#         json_name = mri.replace('.nii', '.json')
+#         json_file = f'{other_path}/{cohort}/{json_name}'
+#         if not os.path.exists(json_file):
+#             continue
+#         with open(json_file, 'r') as fi:
+#             data = json.load(fi)
+#             if 'MRAcquisitionType' not in data or data['MRAcquisitionType'] == '2D':
+#                 continue
+#         other_3d_mris.add(mri)
 
 #%%
 # other_3d_mris = None
@@ -472,7 +475,7 @@ def generate_predictions_for_data_file(dat_file, labels, tst_filter_transform=No
     # initialize datasets
     seed = 0
     print('Done.\nLoading testing dataset ...')
-    dat_tst = CSVDataset(dat_file=dat_file, cnf_file=cnf_file, mode=0, img_mode=img_mode, mri_type=mri_type, other_3d_mris=other_3d_mris, emb_path=emb_path, nacc_mri_info=nacc_mri_info, stripped=True)
+    dat_tst = CSVDataset(dat_file=dat_file, cnf_file=cnf_file, mode=0, img_mode=img_mode, mri_type=mri_type, other_3d_mris=None, emb_path=emb_path, nacc_mri_info=None, stripped=True)
 
     print('Done.')
     
@@ -489,7 +492,7 @@ def generate_predictions_for_data_file(dat_file, labels, tst_filter_transform=No
     # save performance report
     print('Generating performance reports')
     generate_performance_report(dat_tst, y_pred, scores_proba)
-    save_multilabel_confusion_matrix_roc_pr(dat_tst, y_pred, scores_proba, labels)
+    # save_multilabel_confusion_matrix_roc_pr(dat_tst, y_pred, scores_proba, labels)
     print('Done.')
     
 def generate_predictions_for_case(case_dict):
@@ -566,15 +569,16 @@ if __name__ == '__main__':
         tst_filter_transform = None
     # Generate predictions for a test case file
     # give labels list for generating micro, macro and weighted average curves
-    labels = ['NC', 'MCI', 'DE']
+    # labels = ['NC', 'MCI', 'DE']
     # labels =['AD', 'LBD', 'VD', 'PRD', 'FTD', 'NPH', 'SEF', 'PSY', 'TBI', 'ODE']
+    labels = ['amy_label', 'tau_label']
     generate_predictions_for_data_file(dat_file, labels, tst_filter_transform)
 
     #%%
     # Generate prediction for a single case
     # replace this with a dictionary of input features
-    test_case = {'his_NACCREAS': 0.0, 'his_NACCREFR': 2.0, 'his_SEX': 0, 'his_HISPANIC': 1, 'his_HISPOR': 1.0, 'his_RACE': 0, 'his_RACESEC': 3.0, 'his_PRIMLANG': 0.0, 'his_MARISTAT': 2.0, 'his_LIVSIT': 0.0, 'his_INDEPEND': 0.0, 'his_RESIDENC': 0.0, 'his_HANDED': 1.0, 'his_NACCNIHR': 5, 'his_NACCFAM': 1.0, 'his_NACCMOM': 0.0, 'his_NACCDAD': 1.0, 'his_NACCFADM': 0.0, 'his_NACCAM': 0.0, 'his_NACCFFTD': 0.0, 'his_NACCFM': 0.0, 'his_NACCOM': 0.0, 'his_TOBAC30': 0.0, 'his_TOBAC100': 1.0, 'his_CVHATT': 0.0, 'his_CVAFIB': 0.0, 'his_CVANGIO': 0.0, 'his_CVBYPASS': 0.0, 'his_CVPACE': 0.0} # example case
-    scores, scores_proba, y_pred = generate_predictions_for_case(test_case)
+    # test_case = {'his_NACCREAS': 0.0, 'his_NACCREFR': 2.0, 'his_SEX': 0, 'his_HISPANIC': 1, 'his_HISPOR': 1.0, 'his_RACE': 0, 'his_RACESEC': 3.0, 'his_PRIMLANG': 0.0, 'his_MARISTAT': 2.0, 'his_LIVSIT': 0.0, 'his_INDEPEND': 0.0, 'his_RESIDENC': 0.0, 'his_HANDED': 1.0, 'his_NACCNIHR': 5, 'his_NACCFAM': 1.0, 'his_NACCMOM': 0.0, 'his_NACCDAD': 1.0, 'his_NACCFADM': 0.0, 'his_NACCAM': 0.0, 'his_NACCFFTD': 0.0, 'his_NACCFM': 0.0, 'his_NACCOM': 0.0, 'his_TOBAC30': 0.0, 'his_TOBAC100': 1.0, 'his_CVHATT': 0.0, 'his_CVAFIB': 0.0, 'his_CVANGIO': 0.0, 'his_CVBYPASS': 0.0, 'his_CVPACE': 0.0} # example case
+    # scores, scores_proba, y_pred = generate_predictions_for_case(test_case)
 
     #%%
     # Uncomment this section to generate AUC-ROC curves and AUC-PR curves from saved predictions 

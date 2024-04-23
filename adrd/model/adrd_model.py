@@ -217,7 +217,7 @@ class ADRDModel(BaseEstimator):
         self._dataloader_num_workers = _dataloader_num_workers
         self._amp_enabled = _amp_enabled
         self.scaler = torch.cuda.amp.GradScaler()
-        self._init_net()
+        self._init_net() # uncomment when finetuning
 
     @_manage_ctx_fit
     def fit(self, x_trn, x_vld, y_trn, y_vld, img_train_trans=None, img_vld_trans=None, img_mode=0) -> Self:
@@ -780,7 +780,8 @@ class ADRDModel(BaseEstimator):
             state_dict.pop('patch_size')
             state_dict.pop('imgnet_ckpt')
             state_dict.pop('train_imgnet')
-            
+        
+        print(self.img_net)
         for k, info in self.src_modalities.items():
             if info['type'] == 'imaging':
                 if 'emb' not in self.img_net.lower():
