@@ -52,14 +52,17 @@ from monai.transforms import (
 basedir=".."
 
 
-# fname = 'bsc_test.csv'
-fname = 'nacc_test.csv'
+fname = 'habs_test_MCC.csv'
+# fname = 'nacc_test_BAcc.csv'
 # fname = 'clinician_review_cases_test'
 save_path = f'{basedir}/model_predictions_0422/'
-dat_file = "/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/nacc_test.csv"
+# dat_file = "/home/varunaja/mri_pet/adrd_tool_varuna/adrd_tr/ansformer/data/nacc_test.csv"
 # dat_file = "/home/varunaja/mri_pet/ready_data/BSC_ML_DATA.csv"
+dat_file = "/home/varunaja/mri_pet/ready_data/HABS_ML_DATA.csv"
+
 cnf_file = "/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/meta_files/train_imaging_0422_config.toml"
 ckpt_path = "/home/varunaja/mri_pet/adrd_tool_varuna/dev/ckpt/model_ckpt_finetune_alldata.pt"
+# ckpt_path = "/home/varunaja/mri_pet/adrd_tool_varuna/dev/ckpt/model_ckpt_finetune_alldata_BA.pt"
 emb_path = '/data_1/dlteif/SwinUNETR_MRI_stripped_emb/'
 nacc_mri_info = "../clinician_review/mri_3d.json"
 
@@ -90,6 +93,7 @@ if not os.path.exists(save_path):
     
 # load saved Transformer
 device = 'cuda:2'
+# device = 'cpu'
 # img_dict = {'img_net': 'SwinUNETREMB', 'img_size': 128, 'patch_size': 16, 'imgnet_ckpt': ckpt_path, 'imgnet_layers': 4, 'train_imgnet': False}
 mdl = ADRDModel.from_ckpt(ckpt_path, device=device)#, img_dict=img_dict)
 print("loaded")
@@ -406,7 +410,7 @@ def save_performance_report(met, filepath):
 def save_predictions(dat_tst, scores_proba, scores, save_path=None, filename=None, if_save=True):
     y_true = [{k:int(v) if v is not None else np.NaN for k,v in entry.items()} for entry in dat_tst.labels]
     mask = [{k:1 if v is not None else 0 for k,v in entry.items()} for entry in dat_tst.labels]
-
+    print([smp[k] for smp in y_true] for k in y_true[0] if k in dat_file.columns)
     y_true_ = {f'{k}_label': [smp[k] for smp in y_true] for k in y_true[0] if k in dat_file.columns}
     scores_proba_ = {f'{k}_prob': [round(smp[k], 3) if isinstance(y_true[i][k], int) else np.NaN for i, smp in enumerate(scores_proba)] for k in scores_proba[0] if k in dat_file.columns}
     scores_ = {f'{k}_logit': [round(smp[k], 3) if isinstance(y_true[i][k], int) else np.NaN for i, smp in enumerate(scores)] for k in scores[0] if k in dat_file.columns}
