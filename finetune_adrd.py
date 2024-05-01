@@ -26,9 +26,9 @@ basedir = '.'
 # train_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/oasis_train_split_single.csv"
 # vld_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/oasis_val_split_single.csv"
 test_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/nacc_test.csv"
-cnf_file="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/meta_files/train_imaging_0422_config.toml"
+cnf_file="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/meta_files/train_0501_config.toml"
 orig_ckpt_path = '/data_1/skowshik/ckpts_backbone_swinunet/ckpt_without_imaging.pt'
-new_ckpt_path = f'{basedir}/dev/ckpt/model_ckpt_finetune_alldata_BA.pt'
+new_ckpt_path = f'{basedir}/dev/ckpt/model_ckpt_finetune_alldata_0501.pt'
 
 data_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/train_val_data.csv" # path to the data file before train val test split
 train_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/train_data.csv"

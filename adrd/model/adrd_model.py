@@ -217,7 +217,7 @@ class ADRDModel(BaseEstimator):
         self._dataloader_num_workers = _dataloader_num_workers
         self._amp_enabled = _amp_enabled
         self.scaler = torch.cuda.amp.GradScaler()
-        # self._init_net() # uncomment when finetuning, comment when testing
+        self._init_net() # uncomment when finetuning, comment when testing
 
     @_manage_ctx_fit
     def fit(self, x_trn, x_vld, y_trn, y_vld, img_train_trans=None, img_vld_trans=None, img_mode=0) -> Self:

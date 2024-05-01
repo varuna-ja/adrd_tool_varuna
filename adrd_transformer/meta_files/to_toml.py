@@ -340,7 +340,7 @@ labels = ['amy_label', 'tau_label']
 
 import pandas as pd
 
-path = '/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/meta_files/train_meta_file_imaging_0422.csv'
+path = '/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/meta_files/train_meta_file_imaging_0501.csv'
 df = pd.read_csv(path)
 
 #%%
