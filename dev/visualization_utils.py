@@ -52,16 +52,16 @@ from monai.transforms import (
 basedir=".."
 
 
-fname = 'habs_test_MCC.csv'
+fname = 'fhs_test_0501'
 # fname = 'nacc_test_BAcc.csv'
 # fname = 'clinician_review_cases_test'
-save_path = f'{basedir}/model_predictions_0422/'
+save_path = f'{basedir}/model_predictions_0501/'
 # dat_file = "/home/varunaja/mri_pet/adrd_tool_varuna/adrd_tr/ansformer/data/nacc_test.csv"
 # dat_file = "/home/varunaja/mri_pet/ready_data/BSC_ML_DATA.csv"
-dat_file = "/home/varunaja/mri_pet/ready_data/HABS_ML_DATA.csv"
+dat_file = "/home/varunaja/mri_pet/ready_data/FHS_ML_DATA.csv"
 
-cnf_file = "/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/meta_files/train_imaging_0422_config.toml"
-ckpt_path = "/home/varunaja/mri_pet/adrd_tool_varuna/dev/ckpt/model_ckpt_finetune_alldata.pt"
+cnf_file = "/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/meta_files/train_0501_config.toml"
+ckpt_path = "/home/varunaja/mri_pet/adrd_tool_varuna/dev/ckpt/model_ckpt_finetune_alldata_0501.pt"
 # ckpt_path = "/home/varunaja/mri_pet/adrd_tool_varuna/dev/ckpt/model_ckpt_finetune_alldata_BA.pt"
 emb_path = '/data_1/dlteif/SwinUNETR_MRI_stripped_emb/'
 nacc_mri_info = "../clinician_review/mri_3d.json"
@@ -423,18 +423,23 @@ def save_predictions(dat_tst, scores_proba, scores, save_path=None, filename=Non
         cdr = dat_file['cdr_CDRGLOB']
         cdr_df = pd.DataFrame(cdr)
     id_df = pd.DataFrame(ids)
-    if 'fhs' in fname:
-        fhsid = ids = dat_file[['id', 'idtype', 'framid']]
-        fhsid_df = pd.DataFrame(fhsid)
-        if 'cdr_CDRGLOB' in dat_file:
-            df = pd.concat([fhsid_df, id_df, y_true_df, scores_proba_df, cdr_df], axis=1)
-        else:
-            df = pd.concat([fhsid_df, id_df, y_true_df, scores_proba_df], axis=1)
+    # if 'fhs' in fname:
+    #     fhsid = ids = dat_file[['id', 'idtype', 'framid']]
+    #     fhsid_df = pd.DataFrame(fhsid)
+    #     if 'cdr_CDRGLOB' in dat_file:
+    #         df = pd.concat([fhsid_df, id_df, y_true_df, scores_proba_df, cdr_df], axis=1)
+    #     else:
+    #         df = pd.concat([fhsid_df, id_df, y_true_df, scores_proba_df], axis=1)
+    # else:
+    #     if 'cdr_CDRGLOB' in dat_file:
+    #         df = pd.concat([id_df, y_true_df, scores_proba_df, cdr_df], axis=1)
+    #     else:
+    #         df = pd.concat([id_df, y_true_df, scores_proba_df], axis=1)
+
+    if 'cdr_CDRGLOB' in dat_file:
+        df = pd.concat([id_df, y_true_df, scores_proba_df, cdr_df], axis=1)
     else:
-        if 'cdr_CDRGLOB' in dat_file:
-            df = pd.concat([id_df, y_true_df, scores_proba_df, cdr_df], axis=1)
-        else:
-            df = pd.concat([id_df, y_true_df, scores_proba_df], axis=1)
+        df = pd.concat([id_df, y_true_df, scores_proba_df], axis=1)
         
     if if_save:
         df.to_csv(save_path + filename, index=False)
