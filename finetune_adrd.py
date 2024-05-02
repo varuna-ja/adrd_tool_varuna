@@ -28,7 +28,7 @@ basedir = '.'
 test_path="/home/varunaja/mri_pet/ready_data/HABS_ML_DATA.csv"
 cnf_file="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/meta_files/train_0501_config.toml"
 orig_ckpt_path = '/data_1/skowshik/ckpts_backbone_swinunet/ckpt_without_imaging.pt'
-new_ckpt_path = f'{basedir}/dev/ckpt/model_ckpt_finetune_alldata_0501.pt'
+new_ckpt_path = f'{basedir}/dev/ckpt/model_ckpt_ft_predtau_wab.pt'
 
 data_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/train_val_data.csv" # path to the data file before train val test split
 train_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/train_data.csv"
@@ -47,7 +47,9 @@ mri_type="SEQ"
 labels_to_remove = ['AD', 'LBD', 'VD', 'PRD', 'FTD', 'NPH', 'SEF', 'PSY', 'TBI', 'ODE', 'NC', 'MCI', 'DE']
 
 # add the new labels
-new_labels = ['amy_label', 'tau_label']
+# new_labels = ['amy_label', 'tau_label']
+new_labels = ['tau_label']
+
 # new_labels = ['NC', 'MCI', 'DE']
 train_path
 state_dict = torch.load(orig_ckpt_path, map_location=torch.device('cuda'))

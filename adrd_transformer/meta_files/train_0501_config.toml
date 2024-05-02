@@ -1320,11 +1320,11 @@
 	type = "categorical"
 	num_categories = 4
 
-[labels]
-
-	[label.amy_label]
+	[feature.amy_label]
 	type = "categorical"
 	num_categories = 2
+
+[labels]
 
 	[label.tau_label]
 	type = "categorical"

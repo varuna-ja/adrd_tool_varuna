@@ -52,13 +52,17 @@ from monai.transforms import (
 basedir=".."
 
 
-fname = 'fhs_test_0501'
+# fname = 'habs_test_0502'
+# fname = 'adni_test_0502'
+fname = 'bsc_test_0502'
+
 # fname = 'nacc_test_BAcc.csv'
 # fname = 'clinician_review_cases_test'
 save_path = f'{basedir}/model_predictions_0501/'
-# dat_file = "/home/varunaja/mri_pet/adrd_tool_varuna/adrd_tr/ansformer/data/nacc_test.csv"
-# dat_file = "/home/varunaja/mri_pet/ready_data/BSC_ML_DATA.csv"
-dat_file = "/home/varunaja/mri_pet/ready_data/FHS_ML_DATA.csv"
+# dat_file = "/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/nacc_test.csv"
+dat_file = "/home/varunaja/mri_pet/ready_data/BSC_ML_DATA.csv"
+# dat_file = "/home/varunaja/mri_pet/ready_data/HABS_ML_DATA.csv"
+# dat_file = "/home/varunaja/mri_pet/ready_data/ADNI_ML_DATA.csv"
 
 cnf_file = "/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/meta_files/train_0501_config.toml"
 ckpt_path = "/home/varunaja/mri_pet/adrd_tool_varuna/dev/ckpt/model_ckpt_finetune_alldata_0501.pt"
