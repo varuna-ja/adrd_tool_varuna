@@ -25,14 +25,13 @@ basedir = '.'
 # data_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/oasis_data_single.csv" # path to the data file before train val test split
 # train_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/oasis_train_split_single.csv"
 # vld_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/oasis_val_split_single.csv"
-test_path="/home/varunaja/mri_pet/ready_data/HABS_ML_DATA.csv"
-cnf_file="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/meta_files/train_0501_config.toml"
+cnf_file="/home/varunaja/mri_pet/adrd_tool_varuna/data_varuna/meta_files/finetune_0504_config.toml"
 orig_ckpt_path = '/data_1/skowshik/ckpts_backbone_swinunet/ckpt_without_imaging.pt'
-new_ckpt_path = f'{basedir}/dev/ckpt/model_ckpt_ft_predtau_wab.pt'
+new_ckpt_path = f'{basedir}/dev/ckpt/ft_oldmodel_wplasma_0506.pt'
 
-data_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/train_val_data.csv" # path to the data file before train val test split
-train_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/train_data.csv"
-vld_path="/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/val_data.csv"
+data_path="/home/varunaja/mri_pet/adrd_tool_varuna/data_varuna/data/train_val_0506.csv" # path to the data file before train val test split
+train_path="/home/varunaja/mri_pet/adrd_tool_varuna/data_varuna/data/train_0506.csv"
+vld_path="/home/varunaja/mri_pet/adrd_tool_varuna/data_varuna/data/val_0506.csv"
 
 # no need to change these as they will not be used with non-imaging model
 emb_path = '/data_1/dlteif/SwinUNETR_MRI_stripped_MNI_emb/' 
@@ -47,8 +46,8 @@ mri_type="SEQ"
 labels_to_remove = ['AD', 'LBD', 'VD', 'PRD', 'FTD', 'NPH', 'SEF', 'PSY', 'TBI', 'ODE', 'NC', 'MCI', 'DE']
 
 # add the new labels
-# new_labels = ['amy_label', 'tau_label']
-new_labels = ['tau_label']
+new_labels = ['amy_label', 'tau_label']
+# new_labels = ['tau_label']
 
 # new_labels = ['NC', 'MCI', 'DE']
 train_path

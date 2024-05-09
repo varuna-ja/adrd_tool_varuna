@@ -52,20 +52,20 @@ from monai.transforms import (
 basedir=".."
 
 
-# fname = 'habs_test_0502'
-# fname = 'adni_test_0502'
-fname = 'bsc_test_0502'
+# fname = 'habs_test_0506'
+# fname = 'adni_test_0506'
+fname = 'bsc_test_0506'
 
 # fname = 'nacc_test_BAcc.csv'
 # fname = 'clinician_review_cases_test'
-save_path = f'{basedir}/model_predictions_0501/'
+save_path = f'{basedir}/model_predictions/model_predictions_0506/'
 # dat_file = "/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/data/nacc_test.csv"
 dat_file = "/home/varunaja/mri_pet/ready_data/BSC_ML_DATA.csv"
 # dat_file = "/home/varunaja/mri_pet/ready_data/HABS_ML_DATA.csv"
 # dat_file = "/home/varunaja/mri_pet/ready_data/ADNI_ML_DATA.csv"
 
-cnf_file = "/home/varunaja/mri_pet/adrd_tool_varuna/adrd_transformer/meta_files/train_0501_config.toml"
-ckpt_path = "/home/varunaja/mri_pet/adrd_tool_varuna/dev/ckpt/model_ckpt_finetune_alldata_0501.pt"
+cnf_file = "/home/varunaja/mri_pet/adrd_tool_varuna/data_varuna/meta_files/finetune_0504_config.toml"
+ckpt_path = "/home/varunaja/mri_pet/adrd_tool_varuna/dev/ckpt/ft_oldmodel_wplasma_0506.pt"
 # ckpt_path = "/home/varunaja/mri_pet/adrd_tool_varuna/dev/ckpt/model_ckpt_finetune_alldata_BA.pt"
 emb_path = '/data_1/dlteif/SwinUNETR_MRI_stripped_emb/'
 nacc_mri_info = "../clinician_review/mri_3d.json"

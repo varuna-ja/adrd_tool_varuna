@@ -32,7 +32,7 @@ value_mapping = {
 
 # value_mapping = {}
 
-label_names = ['amy_label', 'tau_label', 'NC', 'MCI', 'DE']
+label_names = ['amy_label', 'tau_label']
 
 
 # To use on ivc-ml scc
